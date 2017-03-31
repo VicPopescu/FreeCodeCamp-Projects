@@ -1,0 +1,74 @@
+/*          Available Fonts
+
+    --handwritten
+    font-family: 'Dancing Script', cursive;
+    font-family: 'Tangerine', cursive;
+
+    --monospace
+    font-family: 'Roboto Mono', monospace;
+    font-family: 'Cousine', monospace;
+    font-family: 'Anonymous Pro', monospace;
+*/
+
+/*  Resets   */
+html,body,div,span,h1,h2,h3,h4,h5,h6,p,blockquote,a,img,u,i,section {padding:0;margin:0}
+form,fieldset,img {border:0}
+button,input[type="button"] {cursor:pointer}
+a {cursor:pointer;text-decoration:none;outline:none;color:black}
+html,body {height:100%}
+/*  End - Resets   */
+
+main{
+    height: 100%;
+    width: 100%;
+
+    display: -ms-flexbox;
+	display: -webkit-flex;
+	display: flex;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;    
+    font-family: 'Dancing Script', cursive;
+}
+
+#randomQuote{
+    position: relative;
+    min-height: 40%;
+    width: 40%;
+    max-width: 40%;
+    padding: 30px;
+    border-radius: 3px;
+}
+
+#content{
+    
+}
+
+#quote{
+    
+    font-size: 35px;    
+}
+
+cite{
+    display: block;
+    margin-top: 15px;
+    font-size: 25px; 
+    text-align: right;  
+}
+
+#source{
+     
+}
+#getQuote{
+    position: absolute;
+    bottom: 5px;
+    right: 45%;
+    border: 0;
+    padding: 15px 25px;
+    outline: none;
+}
+@media screen and (max-width: 780px) {
+        
+}
+
