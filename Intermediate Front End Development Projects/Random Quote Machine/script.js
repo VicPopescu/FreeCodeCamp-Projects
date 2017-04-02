@@ -12,18 +12,9 @@ function RandomQuoteComponent() {
         quote_content = $('#quote'),
         quote_source = $('#source');
 
-
-
+    var api_bg_image_link = "https://source.unsplash.com/category/nature/1920x1080#" + new Date().getTime();
     var api_quote_link = "http://quotesondesign.com/wp-json/posts?filter[orderby]=rand&filter[posts_per_page]=1&_jsonp=?";
-    var api_bg_image_link = "https://source.unsplash.com/category/nature/1920x1080#" + new Date().getTime();;
 
-    // root.css({
-    //     'background-image': "url(" + api_bg_image_link + ")"
-    // });
-    
-    root.fadeTo(200, 0.2, function () {
-        $(this).css('background-image', 'url(' + api_bg_image_link + ')');
-    }).fadeTo(2000, 1);
 
     get_bg_brightness(api_bg_image_link, function (brightness) {
 
@@ -60,10 +51,8 @@ function RandomQuoteComponent() {
         }
     });
 
-
-
     //API: get random quote
-    var quote = $.ajax({
+    var quote_API = $.ajax({
 
         url: api_quote_link,
         dataType: 'jsonp', //using jsonp to allow CORS (Cross-origin resource sharing)
@@ -83,12 +72,16 @@ function RandomQuoteComponent() {
         var img = document.createElement("img");
         img.crossOrigin = "Anonymous";
         img.src = imageSrc;
-        img.style.display = "none";
+        //img.style.display = "none";
         //document.body.appendChild(img);
-        $('body').css('background-image', "url(" + img + ")");
         var colorSum = 0;
 
         img.onload = function () {
+
+        $('body').css('background-image', "url(" + img.src + ")");
+            
+
+
             // create canvas
             var canvas = document.createElement("canvas");
             canvas.width = this.width;
@@ -130,17 +123,12 @@ function RandomQuoteComponent() {
             source = quote.link;
 
 
-        //quote_container.data("quote-id", id);
-        quote_container.fadeOut(0, function () {
-            $(this).data("quote-id", id).fadeIn(1000);
-            quote_content.html(content);
-            quote_source.text(title).prop('href', source);
-            
-        });
-        
-        // quote_content.fadeOut(500, function () {
-        //     $(this).html(content).fadeIn(500);
-        // });
+        quote_container.data("quote-id", id);
+        //quote_container.fadeOut(0, function () {
+        //$(this).data("quote-id", id).fadeIn(1000);
+        quote_content.html(content);
+        quote_source.text(title).prop('href', source);
+        //});
 
     };
 };
