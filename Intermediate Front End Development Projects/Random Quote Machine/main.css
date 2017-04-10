@@ -10,65 +10,131 @@
     font-family: 'Anonymous Pro', monospace;
 */
 
+
 /*  Resets   */
-html,body,div,span,h1,h2,h3,h4,h5,h6,p,blockquote,a,img,u,i,section {padding:0;margin:0}
-form,fieldset,img {border:0}
-button,input[type="button"] {cursor:pointer}
-a {cursor:pointer;text-decoration:none;outline:none;color:black}
-html,body {height:100%}
-/*  End - Resets   */
 
-main{
-    height: 100%;
-    width: 100%;
-
-    display: -ms-flexbox;
-	display: -webkit-flex;
-	display: flex;
-    align-items: center;
-    justify-content: center;
-
-    text-align: center;    
-    font-family: 'Dancing Script', cursive;
+html,
+body,
+div,
+span,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+a,
+img,
+u,
+i,
+section {
+    padding: 0;
+    margin: 0
 }
 
-#randomQuote{
+form,
+fieldset,
+img {
+    border: 0
+}
+
+button,
+input[type="button"] {
+    cursor: pointer
+}
+
+a {
+    cursor: pointer;
+    text-decoration: none;
+    outline: none;
+    color: black
+}
+
+html,
+body {
+    height: 100%
+}
+
+blockquote,
+q {
+    quotes: none;
+}
+
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+    content: '';
+    content: none;
+}
+
+
+/*  End - Resets   */
+
+body:not(.loaded) #slider img {
+    display: none;
+}
+
+main {
+    height: 100%;
+    width: 100%;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-family: 'Dancing Script', cursive;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+}
+
+#randomQuote {
     position: relative;
     min-height: 40%;
     width: 40%;
     max-width: 40%;
-    padding: 30px;
+    padding: 5%;
+    padding-bottom: 15%;
     border-radius: 3px;
+    background-color: rgba(0, 0, 0, 0.6);
+    filter: alpha(opacity=60);
 }
 
-#content{
-    
+#content,
+#source {
+    color: white;
 }
 
-#quote{
-    
-    font-size: 35px;    
+#quote {
+    font-size: 35px;
 }
 
-cite{
+cite {
     display: block;
     margin-top: 15px;
-    font-size: 25px; 
-    text-align: right;  
+    font-size: 25px;
+    text-align: right;
 }
 
-#source{
-     
-}
-#getQuote{
+#footerButton {
     position: absolute;
-    bottom: 5px;
-    right: 45%;
-    border: 0;
-    padding: 15px 25px;
-    outline: none;
-}
-@media screen and (max-width: 780px) {
-        
+    bottom: 20px;
+    width: 80%;
+    text-align: center;
 }
 
+#getQuote {
+    border: 0;
+    padding: 10px 20px;
+    outline: none;
+    font-family: 'Tangerine', cursive;
+    font-size: 30px;
+    font-weight: bold;
+    background-color: gray;
+    color: white;
+    border-radius: 2%;
+}
