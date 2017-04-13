@@ -130,13 +130,13 @@ main {
 }
 
 #quote {
-    font-size: 35px;
+    font-size: 4vh;
 }
 
 cite {
     display: block;
     margin-top: 45px;
-    font-size: 25px;
+    font-size: 3vh;
     text-align: right;
 }
 
@@ -152,7 +152,7 @@ cite {
     padding: 10px 20px;
     outline: none;
     font-family: 'Tangerine', cursive;
-    font-size: 30px;
+    font-size: 3vh;
     font-weight: bold;
     background-color: rgba(0, 0, 0, 0.7);
     color: white;
