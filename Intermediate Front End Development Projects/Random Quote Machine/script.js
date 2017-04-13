@@ -1,6 +1,7 @@
 /**
  * @author Victor Popescu {@link https://github.com/VicPopescu}
- * @description Component used to fetch a random quote from an API provided by {@link https://quotesondesign.com/api-v4-0/ QuotesOnDesign}
+ * @description Component used to fetch and display a random quote from an API provided by {@link https://quotesondesign.com/api-v4-0/ QuotesOnDesign}
+ * Background images are provided by {@link https://source.unsplash.com/}
  */
 
 
@@ -26,42 +27,122 @@ var Helpers = (function () {
 
             //create an image object to locally store the image
             var img = new Image();
-            img.src = images[index];
+            img.crossOrigin = '*';
 
-            //when image done downloading
+
+            //when image is downloaded
             img.onload = function () {
-                //push image to preloaded images array, to be used
-                preloaded_images.push(img);
+
                 //set the page background to the current downloaded image
-                $('#main').css("background-image", "url(" + preloaded_images[index].src + ")");
-                //change quote background brightness
-                //get_bg_brightness(img, set_brightness);
+                $('#backgroundChange').css("background-image", "url(" + img.src + ")");
+
+                //change quote background color according to page background-image brightness
+                setTimeout(function () {
+                    Helpers.get_bg_brightness(img, set_brightness);
+                }, 10000);
+
                 //postpose next image preload for certain time
                 setTimeout(function () {
-
+                    //recursive call to preload next image
                     images_preload(images, index + 1);
                 }, 10000);
             }
 
+            img.src = images[index];
+
         } else { //if all images are preloaded, reset the index to beginning and iterate through them
-            //TODO: this aint working right..
 
             index = 0;
-            preloaded_images = [];
             images_preload(images, index);
         }
+    }
+
+
+    /**
+     * @private
+     * @description Change quote container background color according to page background-image brightness
+     * @param {number} brightness 
+     */
+    var set_brightness = function (brightness) {
+
+        if (brightness > 100) {
+            $('#randomQuote').css({
+                'background-color': 'rgba(0,0,0,0.6)',
+                'filter': 'alpha(opacity=40)'
+            });
+            $('#content').css({
+                'color': 'white',
+            });
+            $('#source').css({
+                'color': 'white'
+            });
+            $('#getQuote').css({
+                'background-color': 'rgba(255,255,255,0.7)',
+                'color': 'black'
+            });
+        } else {
+            $('#randomQuote').css({
+                'background-color': 'rgba(255,255,255,0.6)',
+                'filter': 'alpha(opacity=40)'
+            });
+            $('#content').css({
+                'color': 'black',
+            });
+            $('#source').css({
+                'color': 'black'
+            });
+            $('#getQuote').css({
+                'background-color': 'rgba(0,0,0,0.7)',
+                'color': 'white'
+            });
+        }
+    }
+
+
+    /**
+     * @public
+     * @description 
+     * @param {image} img 
+     * @param {function} adjustBrightness 
+     */
+    var get_bg_brightness = function (img, adjustBrightness) {
+
+        var colorSum = 0;
+
+        // create canvas
+        var canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+
+        var ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0);
+
+        var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        var data = imageData.data;
+        var r, g, b, avg;
+
+        for (var x = 0, len = data.length; x < len; x += 4) {
+            r = data[x];
+            g = data[x + 1];
+            b = data[x + 2];
+
+            avg = Math.floor((r + g + b) / 3);
+            colorSum += avg;
+        }
+
+        var brightness = Math.floor(colorSum / (img.width * img.height));
+
+        adjustBrightness(brightness);
     }
 
     /**
      * Public Methods
      */
     var PUBLIC = {
-        images_preload: images_preload
+        images_preload: images_preload,
+        get_bg_brightness: get_bg_brightness
     }
 
-    /**
-     * Export Public Methods
-     */
     return PUBLIC;
 
 })();
@@ -75,6 +156,7 @@ var Helpers = (function () {
 var Api = (function () {
 
     /**
+     * @public
      * @description Get a random quote from {@link http://quotesondesign.com/}
      */
     var get_quote = function () {
@@ -82,9 +164,6 @@ var Api = (function () {
         return $.ajax({
             url: "http://quotesondesign.com/wp-json/posts?filter[orderby]=rand&filter[posts_per_page]=1&_jsonp=?",
             dataType: 'jsonp', //using jsonp to allow CORS (Cross-origin resource sharing)
-            success: function (data) {
-                //display_quote(data[0]);
-            },
             error: function () {
                 alert("Something went wrong with the server...");
             }
@@ -99,9 +178,6 @@ var Api = (function () {
         get_quote: get_quote
     }
 
-    /**
-     * Export Public Methods
-     */
     return PUBLIC;
 
 })();
@@ -109,7 +185,7 @@ var Api = (function () {
 
 /**
  * @public
- * @description API providers
+ * @description Display quote on screen. Triggered when "New Awesome Quote" button is pressed.
  */
 var displayRandomQuote = function () {
 
@@ -121,7 +197,7 @@ var displayRandomQuote = function () {
      * @description Use quote retrieved from API and display it on page
      * @param {object} data Object retrieved from quote API
      */
-    var display_quote = function (data) {
+    var display_quote = function (quote) {
 
         //dom selectors
         var $root = $('main'),
@@ -130,19 +206,19 @@ var displayRandomQuote = function () {
             $quote_content = $('#quote'),
             $quote_source = $('#source');
 
-        //quote details
-        var quote = data,
-            id = quote.id,
+        //quote details from API
+        var id = quote.id,
             title = quote.title,
             content = quote.content,
             source = quote.link;
 
         //append quote in DOM
         $quote_container.data("quote-id", id);
-        $quote_content.html(content);
+        $quote_content.fadeOut(500, function () {
+            $(this).html(content).fadeIn(500);
+        })
         $quote_source.text(title).prop('href', source);
     };
-
 
     //display quote when done fetching
     random_quote.done(function (data) {
@@ -159,7 +235,8 @@ var displayRandomQuote = function () {
 var AwesomeQuoteGenerator = (function () {
 
     //array of images src
-    var images = ["https://source.unsplash.com/category/nature/1920x1080",
+    var images = [
+        "https://source.unsplash.com/category/nature/1920x1080",
         "https://source.unsplash.com/category/nature/1920x1081",
         "https://source.unsplash.com/category/nature/1920x1082",
         "https://source.unsplash.com/category/nature/1921x1080",
@@ -170,97 +247,11 @@ var AwesomeQuoteGenerator = (function () {
     //preload background images
     Helpers.images_preload(images);
 
+
     //attach event handlers
     $('#getQuote').on("click.getNewQuote", displayRandomQuote);
-    $('#getQuote').trigger('click.getNewQuote');
+
+    $(function () {
+        $('#getQuote').trigger('click.getNewQuote');
+    })
 })();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/**
- * 
- * @param {number} brightness 
- */
-var set_brightness = function (brightness) {
-
-    if (brightness < 100) {
-        $('#randomQuote').css({
-            'background-color': 'rgba(0,0,0,0.4)',
-            'filter': 'alpha(opacity=40)'
-        });
-        $('#content').css({
-            'color': 'white',
-        });
-        $('#source').css({
-            'color': 'white'
-        });
-        $('#getQuote').css({
-            'background-color': 'rgba(255,255,255,0.4)',
-            'color': 'black'
-        });
-    } else {
-        $('#randomQuote').css({
-            'background-color': 'rgba(255,255,255,0.4)',
-            'filter': 'alpha(opacity=40)'
-        });
-        $('#content').css({
-            'color': 'black',
-        });
-        $('#source').css({
-            'color': 'black'
-        });
-        $('#getQuote').css({
-            'background-color': 'rgba(0,0,0,0.4)',
-            'color': 'white'
-        });
-    }
-}
-
-
-
-/**
- * 
- * @param {image} img 
- * @param {function} changeBrightness 
- */
-function get_bg_brightness(img, changeBrightness) {
-
-    var colorSum = 0;
-
-    // create canvas
-    var canvas = document.createElement("canvas");
-    canvas.width = this.width;
-    canvas.height = this.height;
-
-    var ctx = canvas.getContext("2d");
-    ctx.drawImage(this, 0, 0);
-
-    var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    var data = imageData.data;
-    var r, g, b, avg;
-
-    for (var x = 0, len = data.length; x < len; x += 4) {
-        r = data[x];
-        g = data[x + 1];
-        b = data[x + 2];
-
-        avg = Math.floor((r + g + b) / 3);
-        colorSum += avg;
-    }
-
-    var brightness = Math.floor(colorSum / (this.width * this.height));
-
-    changeBrightness(brightness);
-
-}
