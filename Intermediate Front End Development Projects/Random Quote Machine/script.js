@@ -4,6 +4,17 @@
  * Background images are provided by {@link https://source.unsplash.com/}
  */
 
+//Global DOM selectors
+var $root = $('main'),
+    $background = $('#backgroundChange'),
+    $quote_container = $('#randomQuote'),
+    $quote_content = $('#content'),
+    $quote_title = $('#title'),
+    $quote_text = $('#quote'),
+    $quote_source = $('#source'),
+    $quote_getquote = $('#getQuote'),
+    $quote_twittershare = $('#tweetQuote');
+
 
 /**
  * @public
@@ -11,52 +22,8 @@
  */
 var Helpers = (function () {
 
-    //array of preloaded images
-    var preloaded_images = [];
 
-    /**
-     * @public
-     * @description Takes an array of images src (images) and preload every image before need to be used
-     */
-    var images_preload = function (images, index) {
-
-        index = index || 0;
-
-        //till the end of images array
-        if (images && images.length > index) {
-
-            //create an image object to locally store the image
-            var img = new Image();
-            img.crossOrigin = '*';
-
-
-            //when image is downloaded
-            img.onload = function () {
-
-                //set the page background to the current downloaded image
-                $('#backgroundChange').css("background-image", "url(" + img.src + ")");
-
-                //change quote background color according to page background-image brightness
-                setTimeout(function () {
-                    Helpers.get_bg_brightness(img, set_brightness);
-                }, 10000);
-
-                //postpose next image preload for certain time
-                setTimeout(function () {
-                    //recursive call to preload next image
-                    images_preload(images, index + 1);
-                }, 10000);
-            }
-
-            img.src = images[index];
-
-        } else { //if all images are preloaded, reset the index to beginning and iterate through them
-
-            index = 0;
-            images_preload(images, index);
-        }
-    }
-
+    /****      PRIVATE FUNCTIONS       ****/
 
     /**
      * @private
@@ -65,51 +32,107 @@ var Helpers = (function () {
      */
     var set_brightness = function (brightness) {
 
+        //too bright image background
         if (brightness > 100) {
-            $('#randomQuote').css({
+            $quote_container.css({
                 'background-color': 'rgba(0,0,0,0.6)',
                 'filter': 'alpha(opacity=40)'
             });
-            $('#content').css({
+            $quote_content.css({
                 'color': 'white',
             });
-            $('#source').css({
+            $quote_source.css({
                 'color': 'white'
             });
-            $('#getQuote').css({
+            $quote_getquote.css({
                 'background-color': 'rgba(255,255,255,0.7)',
                 'color': 'black'
             });
+
+            //too dark image background
         } else {
-            $('#randomQuote').css({
+            $quote_container.css({
                 'background-color': 'rgba(255,255,255,0.6)',
                 'filter': 'alpha(opacity=40)'
             });
-            $('#content').css({
+            $quote_content.css({
                 'color': 'black',
             });
-            $('#source').css({
+            $quote_source.css({
                 'color': 'black'
             });
-            $('#getQuote').css({
+            $quote_getquote.css({
                 'background-color': 'rgba(0,0,0,0.7)',
                 'color': 'white'
             });
         }
-    }
+    };
+
+
+    /****      PUBLIC FUNCTIONS       ****/
+
+    /**
+     * @public
+     * @description Takes an array of images src (images) and preload every image before need to be used
+     * @param {array} images Array holding images src's
+     * @param {number} index Keep track of image index in array
+     */
+    var images_preload = function (images, index) {
+
+        //keep track of image index in array
+        index = index || 0;
+
+        //till the end of images array
+        if (images && images.length > index) {
+
+            //create an image object to locally store the image. Set "crossOrigin" = ALL, to allow cross servers image fetching
+            var img = new Image();
+            img.crossOrigin = '*';
+
+            //when the image is finished downloading
+            img.onload = function () {
+
+                //set the page background to the current downloaded image
+                setTimeout(function () {
+                    $background.css("background-image", "url(" + img.src + ")");
+                },0);
+                //change quote background color according to page background-image brightness
+                setTimeout(function () {
+                    Helpers.get_bg_brightness(img, set_brightness);
+                }, 4000);
+                //postpose next image preload for certain time
+                setTimeout(function () {
+                    //recursive call to preload next image
+                    images_preload(images, index + 1);
+                }, 10000);
+            }
+
+            //set current image object src, from images array
+            img.src = images[index];
+
+        } else { //if all images are preloaded, reset the index to beginning and iterate through them
+
+            //reset iamges array index to 0
+            index = 0;
+            //start preloading images from index 0
+            setTimeout(function () {
+                images_preload(images, index);
+            }, 0);
+        }
+    };
 
 
     /**
      * @public
-     * @description 
-     * @param {image} img 
-     * @param {function} adjustBrightness 
+     * @description Create a canvas from current background image, then calculate image brightness
+     * @param {image} img Current background image object
+     * @param {function|callback} adjustBrightness Adjust quote container brightness according to resulted brightness and this callback settings
      */
     var get_bg_brightness = function (img, adjustBrightness) {
 
         var colorSum = 0;
 
-        // create canvas
+        // create canvas from image object
         var canvas = document.createElement("canvas");
         canvas.width = img.width;
         canvas.height = img.height;
@@ -130,17 +153,36 @@ var Helpers = (function () {
             colorSum += avg;
         }
 
+        //background image brightness
         var brightness = Math.floor(colorSum / (img.width * img.height));
-
+        //adjust quote container brightness
         adjustBrightness(brightness);
-    }
+    };
+
 
     /**
-     * Public Methods
+     * @public
+     * @description This handles twitter sharing for the current quote. It will open a new smaller window with all details already in place
+     */
+    var share_on_twitter = function () {
+
+        //details for sharing quote
+        var baseURL = 'https://twitter.com/intent/tweet?hashtags=AwesomeQuotes&text=';
+        var quote = $quote_text.text().slice(0, -1); //slice last breakpoint from quote string
+        var author = $quote_source.text();
+        var URL = baseURL + encodeURIComponent('"' + quote + '"  ' + author);
+        //open new window
+        window.open(URL, 'Tweet about it!', 'width=600,height=500');
+    }
+
+
+    /**
+     * Public Exports
      */
     var PUBLIC = {
         images_preload: images_preload,
-        get_bg_brightness: get_bg_brightness
+        get_bg_brightness: get_bg_brightness,
+        share_on_twitter: share_on_twitter
     }
 
     return PUBLIC;
@@ -162,7 +204,8 @@ var Api = (function () {
     var get_quote = function () {
 
         return $.ajax({
-            url: "http://quotesondesign.com/wp-json/posts?filter[orderby]=rand&filter[posts_per_page]=1&_jsonp=?",
+            async: true,
+            url: "https://quotesondesign.com/wp-json/posts?filter[orderby]=rand&filter[posts_per_page]=1&_jsonp=?",
             dataType: 'jsonp', //using jsonp to allow CORS (Cross-origin resource sharing)
             error: function () {
                 alert("Something went wrong with the server...");
@@ -172,7 +215,7 @@ var Api = (function () {
 
 
     /**
-     * Public methods
+     * Public exports
      */
     var PUBLIC = {
         get_quote: get_quote
@@ -199,13 +242,6 @@ var displayRandomQuote = function () {
      */
     var display_quote = function (quote) {
 
-        //dom selectors
-        var $root = $('main'),
-            $quote_container = $('#randomQuote'),
-            $quote_title = $('#title'),
-            $quote_content = $('#quote'),
-            $quote_source = $('#source');
-
         //quote details from API
         var id = quote.id,
             title = quote.title,
@@ -214,7 +250,7 @@ var displayRandomQuote = function () {
 
         //append quote in DOM
         $quote_container.data("quote-id", id);
-        $quote_content.fadeOut(500, function () {
+        $quote_text.fadeOut(500, function () {
             $(this).html(content).fadeIn(500);
         })
         $quote_source.text(title).prop('href', source);
@@ -249,9 +285,11 @@ var AwesomeQuoteGenerator = (function () {
 
 
     //attach event handlers
-    $('#getQuote').on("click.getNewQuote", displayRandomQuote);
-
+    $quote_getquote.on("click.getNewQuote", displayRandomQuote);
+    //share n twitter button handler bind
+    $quote_twittershare.on('click', Helpers.share_on_twitter);
+    //on first page load, fetch first quote and display it
     $(function () {
-        $('#getQuote').trigger('click.getNewQuote');
+        $quote_getquote.trigger('click.getNewQuote');
     })
 })();
