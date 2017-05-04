@@ -105,7 +105,7 @@ var Helpers = (function () {
                     //recursive call to preload next image
                     images_preload(images, index + 1);
                 }, 10000);
-            }
+            };
 
             //set current image object src, from images array
             img.src = images[index];
@@ -173,7 +173,7 @@ var Helpers = (function () {
         var URL = baseURL + encodeURIComponent('"' + quote + '"  ' + author);
         //open new window
         window.open(URL, 'Tweet about it!', 'width=600,height=500');
-    }
+    };
 
 
     /**
@@ -183,7 +183,7 @@ var Helpers = (function () {
         images_preload: images_preload,
         get_bg_brightness: get_bg_brightness,
         share_on_twitter: share_on_twitter
-    }
+    };
 
     return PUBLIC;
 

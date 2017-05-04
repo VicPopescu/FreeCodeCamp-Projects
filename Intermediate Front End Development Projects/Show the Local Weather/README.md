@@ -1,2 +1,3 @@
-# FreeCodeCamp-Projects
-Projects done at Freecodecamp
+# Show the Local Weather
+
+Displays information about the weather based on your location.
