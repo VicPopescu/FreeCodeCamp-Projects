@@ -1,6 +1,6 @@
 /**
  * @author Victor Popescu {@link https://github.com/VicPopescu}
- * @description Component that displays local weather informations from an API provided by {@link https://openweathermap.org OpenWeatherMap}
+ * @description Component that displays local weather informations from an API provided by {@link https://darksky.net Dark Sky API}
  */
 
 //Global DOM selectors
@@ -12,28 +12,29 @@ var $root = $('main');
  */
 var Helpers = (function () {
 
-    var location_details;
-    var weather_details;
+    var location_details = {};
 
     /**
      * @private
      * @description Error handling when getting user position
      */
     var error_handler = function (error) {
+
         switch (error.code) {
+
             case error.PERMISSION_DENIED:
-                x.innerHTML = "User denied the request for Geolocation."
+                console.log("User denied the request for Geolocation.");
                 break;
             case error.POSITION_UNAVAILABLE:
-                x.innerHTML = "Location information is unavailable."
+                console.log("Location information is unavailable.");
                 break;
             case error.TIMEOUT:
-                x.innerHTML = "The request to get user location timed out."
+                console.log("The request to get user location timed out.")
                 break;
             case error.UNKNOWN_ERROR:
-                x.innerHTML = "An unknown error occurred."
+                console.log("An unknown error occurred.");
                 break;
-        }
+        };
     };
 
 
@@ -41,55 +42,9 @@ var Helpers = (function () {
      * @private
      * @description Construct location details (City, Country, Population etc)
      */
-    var set_locationDetails = function (location) {
-
-        //var location = location.city;
-
-        location_details = {
-            country: location.country,
-            city: location.name,
-            population: location.population
-        };
-    };
-
-
-    /**
-     * @private
-     * @description Construct weather details
-     */
-    var set_weatherDetails = function (weather) {
-
-        weather_details = weather;
-
-        // weather.forEach(function (val) {
-
-        //     var dateTime = val.dt,
-        //         dateTimeStr = val.dt_txt,
-        //         clouds = val.clouds,
-        //         main = val.main,
-        //         rain = val.rain,
-        //         weather = val.weather,
-        //         wind = val.wind;
-        // });
-    };
-
-    /**
-     * @private
-     * @description Get location details (City, Country, Population etc)
-     */
-    var get_locationDetails = function () {
-
-        return location_details;
-    };
-
-
-    /**
-     * @private
-     * @description Construct weather details ()
-     */
-    var get_weatherDetails = function () {
-
-        return weather_details;
+    var set_locationDetails = function (lat, long) {
+        location_details.lat = lat;
+        location_details.long = long;
     };
 
 
@@ -117,16 +72,24 @@ var Helpers = (function () {
 
 
     /**
+     * @private
+     * @description Get location details (City, Country, Population etc)
+     */
+    var get_locationDetails = function () {
+
+        return location_details;
+    };
+
+
+    /**
      * Public Exports
      */
     var PUBLIC = {
-
+        //sets
         set_locationDetails: set_locationDetails,
-        set_weatherDetails: set_weatherDetails,
-
+        //gets
         get_location_coords: get_location_coords,
-        get_locationDetails: get_locationDetails,
-        get_weatherDetails: get_weatherDetails
+        get_locationDetails: get_locationDetails
     };
 
     return PUBLIC;
@@ -136,19 +99,73 @@ var Helpers = (function () {
 
 /**
  * @public
+ * @description 
+ */
+var Weather = (function () {
+
+    //var Currently;        //Current weather contitions at the requested location
+    //var Daily;            //Weather conditions hour-by-hour for the next two days
+    //var Hourly;           //Weather conditions day-by-day for the next week.
+    //var Alerts;           //If present, contains any severe weather alerts pertinent to the requested location.
+
+    //weather details
+    var weather_details = {};
+
+
+    /**
+     * @private
+     * @description Construct weather details
+     */
+    var set_weatherDetails = function (weatherData) {
+
+        weather_details = weatherData;
+
+        // Currently = weatherData.currently || null;
+        // Daily = weatherData.daily || null;
+        // Hourly = weatherData.daily || null;
+        // Alerts = weatherData.alerts || null;
+    };
+
+
+    /**
+     * @private
+     * @description Construct weather details
+     */
+    var get_weatherDetails = function () {
+
+        return weather_details;
+    };
+
+    /**
+     * Public Exports
+     */
+    var PUBLIC = {
+
+        set_weatherDetails: set_weatherDetails,
+        get_weatherDetails: get_weatherDetails
+    };
+
+    return PUBLIC;
+})();
+
+/**
+ * @public
  * @description API providers
  */
 var Api = (function () {
 
     /**
      * @public
-     * @description Get a weather informations from {@link api.openweathermap.org}
+     * @description Get a weather informations from {@link api.darksky.net/forecast Forecast}
      */
     var get_weatherInfo = function (latitude, longitude) {
 
+        var url = "https://crossorigin.me/https://api.darksky.net/forecast/d212e752e77024fa82c5713e0debad8b/" + latitude + "," + longitude + "?exclude=flags,minutely";
+
         return $.ajax({
+            type: 'GET',
             async: true,
-            url: "http://api.openweathermap.org/data/2.5/forecast?lat=" + latitude + "&lon=" + longitude + "&APPID=12e59094f11208eb3f96af241f52462b",
+            url: url,
             dataType: 'json',
             error: function () {
                 alert("Something went wrong with the server...");
@@ -162,10 +179,9 @@ var Api = (function () {
      */
     var PUBLIC = {
         get_weatherInfo: get_weatherInfo
-    }
+    };
 
     return PUBLIC;
-
 })();
 
 
@@ -176,24 +192,26 @@ var Api = (function () {
  */
 var WeatherApp = (function () {
 
+    //get user location coordinates
     var getCoords = Helpers.get_location_coords();
-
+    //then:
     getCoords.done(function (coords) {
 
-        latitude = coords.latitude;
-        longitude = coords.longitude;
+        //user latitude and longitude
+        Helpers.set_locationDetails(coords.latitude, coords.longitude);
 
-        var weatherInfo = Api.get_weatherInfo(latitude, longitude);
-
+        //get weather info using previously obtained coords
+        var weatherInfo = Api.get_weatherInfo(Helpers.get_locationDetails().lat, Helpers.get_locationDetails().long);
+        //then:
         weatherInfo.done(function (statistics) {
 
-            Helpers.set_locationDetails(statistics.city);
-            Helpers.set_weatherDetails(statistics.list);
+            //construct location details
+            //Helpers.set_locationDetails(statistics);
+            //construct weather details
+            Weather.set_weatherDetails(statistics);
+            //
 
-            var a = Helpers.get_locationDetails();
-            console.log(a);
-            var b = Helpers.get_weatherDetails();
-            console.log(b);
+            console.log(Weather.get_weatherDetails())
         });
     });
 })();

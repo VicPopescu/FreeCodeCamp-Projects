@@ -45,7 +45,7 @@ a {
 }
 
 a:hover {
-    color: orangered;
+    color: #40c4ff;
 }
 
 html,
@@ -54,32 +54,21 @@ body {
     position: relative;
 }
 
-blockquote,
-q {
-    quotes: none;
-}
-
-blockquote:before,
-blockquote:after,
-q:before,
-q:after {
-    content: '';
-    content: none;
-}
-
 /*  End - Resets   */
 
 main {
+    background-color:rgb(49, 49, 52);
     position: relative;
     height: 100vh;
     width: 100vw;
-    /*display: -ms-flexbox;
+    color: #40c4ff;
+    position: relative;
+    display: -ms-flexbox;
     display: -webkit-flex;
     display: flex;
-    align-items: center;
-    justify-content: center;
+    align-items: center; /*vertical align*/
+    justify-content: center;/*horizontal align*/
     text-align: center;
-    font-family: 'Dancing Script', cursive;*/
 }
 
 footer {
