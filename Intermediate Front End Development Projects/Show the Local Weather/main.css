@@ -66,9 +66,15 @@ main {
     display: -ms-flexbox;
     display: -webkit-flex;
     display: flex;
-    align-items: center; /*vertical align*/
-    justify-content: center;/*horizontal align*/
+    align-items: center; 
+    justify-content: center;
     text-align: center;
+}
+
+#chart{
+    margin-top: 50px;
+    height: 700px;
+    width: 700px;
 }
 
 footer {
