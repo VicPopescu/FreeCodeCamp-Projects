@@ -12,6 +12,9 @@ var $root = $('main');
  */
 var Helpers = (function () {
 
+    var location_details;
+    var weather_details;
+
     /**
      * @private
      * @description Error handling when getting user position
@@ -35,10 +38,66 @@ var Helpers = (function () {
 
 
     /**
-     * @public
-     * @description Get user location coordinates
+     * @private
+     * @description Construct location details (City, Country, Population etc)
      */
-    var get_location = function () {
+    var set_locationDetails = function (location) {
+
+        //var location = location.city;
+
+        location_details = {
+            country: location.country,
+            city: location.name,
+            population: location.population
+        };
+    };
+
+
+    /**
+     * @private
+     * @description Construct weather details
+     */
+    var set_weatherDetails = function (weather) {
+
+        weather_details = weather;
+
+        // weather.forEach(function (val) {
+
+        //     var dateTime = val.dt,
+        //         dateTimeStr = val.dt_txt,
+        //         clouds = val.clouds,
+        //         main = val.main,
+        //         rain = val.rain,
+        //         weather = val.weather,
+        //         wind = val.wind;
+        // });
+    };
+
+    /**
+     * @private
+     * @description Get location details (City, Country, Population etc)
+     */
+    var get_locationDetails = function () {
+
+        return location_details;
+    };
+
+
+    /**
+     * @private
+     * @description Construct weather details ()
+     */
+    var get_weatherDetails = function () {
+
+        return weather_details;
+    };
+
+
+    /**
+     * @public
+     * @description Get user location coordinates using HTML5 Geolocation
+     */
+    var get_location_coords = function () {
 
         var coords = $.Deferred();
 
@@ -47,6 +106,7 @@ var Helpers = (function () {
             navigator.geolocation.getCurrentPosition(function (position) {
 
                 coords.resolve(position.coords);
+
             }, error_handler);
         } else {
             console.log("Geolocation is not supported by this browser.");
@@ -60,7 +120,13 @@ var Helpers = (function () {
      * Public Exports
      */
     var PUBLIC = {
-        get_location: get_location
+
+        set_locationDetails: set_locationDetails,
+        set_weatherDetails: set_weatherDetails,
+
+        get_location_coords: get_location_coords,
+        get_locationDetails: get_locationDetails,
+        get_weatherDetails: get_weatherDetails
     };
 
     return PUBLIC;
@@ -109,19 +175,25 @@ var Api = (function () {
  * @description Main application logic
  */
 var WeatherApp = (function () {
-    
-    var getCoords = Helpers.get_location();
+
+    var getCoords = Helpers.get_location_coords();
 
     getCoords.done(function (coords) {
 
         latitude = coords.latitude;
         longitude = coords.longitude;
 
-        // var weatherInfo = Api.get_weatherInfo(latitude, longitude);
+        var weatherInfo = Api.get_weatherInfo(latitude, longitude);
 
-        // weatherInfo.done(function (statistics) {
-        //     console.log(statistics);
-        // });
+        weatherInfo.done(function (statistics) {
+
+            Helpers.set_locationDetails(statistics.city);
+            Helpers.set_weatherDetails(statistics.list);
+
+            var a = Helpers.get_locationDetails();
+            console.log(a);
+            var b = Helpers.get_weatherDetails();
+            console.log(b);
+        });
     });
-
 })();
