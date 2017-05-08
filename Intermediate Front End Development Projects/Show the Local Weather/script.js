@@ -96,20 +96,6 @@ var Helpers = (function () {
 
 
     /**
-     * @private
-     * @description Format number to display only 2 digits. eg. 32.00023001 = 32.00
-     */
-    var get_twoDecimalNumber = function (nr) {
-
-        if (!Number.isInteger(nr)) {
-            console.log(nr);
-            return Number.parseFloat(Math.round(nr * 100) / 100).toFixed(2);
-        } else {
-            return nr;
-        }
-    };
-
-    /**
      * Public Exports
      */
     var PUBLIC = {
@@ -118,9 +104,7 @@ var Helpers = (function () {
         //gets
         get_location_coords: get_location_coords,
         get_locationDetails: get_locationDetails,
-        get_hourFromTimestamp: get_hourFromTimestamp,
-        get_twoDecimalNumber: get_twoDecimalNumber
-
+        get_hourFromTimestamp: get_hourFromTimestamp
     };
 
     return PUBLIC;
