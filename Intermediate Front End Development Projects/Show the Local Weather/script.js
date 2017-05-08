@@ -152,27 +152,31 @@ var Weather = (function () {
     var get_weatherUnits = function () { //TODO: add units for all tracked weather information
 
         var localUnits = {};
+        
         //todo add units for more (wind, etc)
         switch (units) {
             case 'ca':
                 localUnits = {
                     t: '\u00B0C',
-                    //p: 'millimeters/h'        example for precipitations
+                    p: ' mm/h'
                 };
                 break;
             case 'si':
                 localUnits = {
-                    t: '\u00B0C'
+                    t: '\u00B0C',
+                    p: ' mm/h'
                 };
                 break;
             case 'uk2':
                 localUnits = {
-                    t: '\u00B0C'
+                    t: '\u00B0C',
+                    p: ' mm/h'
                 };
                 break;
             case 'us':
                 localUnits = {
-                    t: '\u00B0F'
+                    t: '\u00B0F',
+                    p: ' inches/h'
                 };
                 break;
             default:
@@ -214,8 +218,6 @@ var Charts = (function () {
         var weekDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
         var days = [];
 
-
-
         providedData.data.forEach(function (weatherPerDay, index) {
 
             temperatureData.push(weatherPerDay.temperatureMax);
@@ -235,8 +237,8 @@ var Charts = (function () {
 
             precipDetails.push([
                 'Probability: ' + (weatherPerDay.precipProbability * 100).toFixed() + '%',
-                'Intensity: ' + (weatherPerDay.precipIntensity * 100).toFixed() + '%',
-                'IntensityMax: ' + (weatherPerDay.precipIntensityMax * 100).toFixed() + '%',
+                'Intensity: ' + (weatherPerDay.precipIntensity) + Weather.get_weatherUnits().p,
+                'Max Intensity: ' + (weatherPerDay.precipIntensityMax) + Weather.get_weatherUnits().p,
                 'Type: ' + weatherPerDay.precipType
             ]);
         });

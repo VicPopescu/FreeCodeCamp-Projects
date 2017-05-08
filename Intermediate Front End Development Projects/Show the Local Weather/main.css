@@ -71,15 +71,15 @@ main {
     text-align: center;
 }
 
-#chart{
+#chartContainer{
     margin-top: 50px;
-    height: 700px;
-    width: auto;
+    max-height: 400px;
+    width: 600px;
 }
 
 #weatherChart{
-    height: 70vh;
-    width: auto;
+    width: 100%;
+    height: 100%;
 }
 
 footer {
