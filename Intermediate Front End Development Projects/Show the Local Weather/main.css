@@ -74,7 +74,12 @@ main {
 #chart{
     margin-top: 50px;
     height: 700px;
-    width: 700px;
+    width: auto;
+}
+
+#weatherChart{
+    height: 70vh;
+    width: auto;
 }
 
 footer {
