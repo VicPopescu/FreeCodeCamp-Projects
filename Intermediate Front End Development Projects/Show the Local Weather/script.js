@@ -256,7 +256,7 @@ var Charts = (function () {
         precipitationsGradient.addColorStop(0.5, 'rgba(0, 204, 204, 0.25)');
         precipitationsGradient.addColorStop(1, 'rgba(0, 204, 204, 0)');
 
-
+        //TODO: make a generic constructor to avoid code repetitions
         var temperature = {
             label: "Temperature",
             data: temperatureData,
