@@ -383,31 +383,42 @@ var Charts = (function () {
                         } else {
                             weatherChart.data.datasets[datasetIndex]._meta[0].hidden = true;
                             weatherChart.scales[datasetId].options.scaleLabel.display = false;
-                            
+
                         }
                         weatherChart.update();
                     }
                 },
-                point: {
-                    backgroundColor: 'green'
-                },
                 tooltips: {
-                    titleFontFamily: 'Open Sans',
-                    titleSpacing: 10,
-                    titleFontColor: 'white',
                     backgroundColor: 'rgba(49, 49, 52, 0.7)',
-                    caretSize: 5,
-                    bodySpacing: 8,
-                    cornerRadius: 2,
+                    bodyFontFamily: 'Arial',
+                    bodyFontColor: 'rgba(255, 255, 255, 0.7)',
+                    bodyFontSize: 16,
+                    bodySpacing: 10,
+                    caretSize: 10,
+                    cornerRadius: 4,
+                    titleFontFamily: 'Arial',
+                    titleFontColor: 'rgba(255, 255, 255, 0.9)',
+                    titleFontSize: 18,
+                    titleSpacing: 10,
+                    titleMarginBottom: 10,
+                    displayColors: false,
                     xPadding: 10,
                     yPadding: 10,
                     callbacks: {
+                        title: function (tooltipItem, data) {
+
+                            var datasetIndex = tooltipItem[0].datasetIndex;
+                            var label1 = tooltipItem[0].xLabel;
+                            var label2 = data.datasets[datasetIndex].label;
+
+                            return label1 + "'s " + label2 || "Potato Title not found...";
+                        },
                         label: function (tooltipItems, data) {
 
                             var datasetIndex = tooltipItems.datasetIndex;
                             var tooltopIndex = tooltipItems.index;
 
-                            return data.datasets[datasetIndex].moreDetails[tooltopIndex];
+                            return data.datasets[datasetIndex].moreDetails[tooltopIndex] || "Potato Label not found...";
                         }
                     }
                 }
