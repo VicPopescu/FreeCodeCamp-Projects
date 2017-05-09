@@ -8,7 +8,8 @@ var $root = $('main');
 var $welcome = $('#welcome');
 
 var $weatherInfoContainer = $('#weatherInfo'),
-    $currentWeatherContainer = $('#currentWeather'),
+    $currentWeather = $('#currentWeather'),
+    $currentWeatherContainer = $('#currentWeatherContainer'),
     $chartContainer = $('#nextDaysWeather'),
     $weatherChart = $('#weatherChart');
 
@@ -500,7 +501,7 @@ var Charts = (function () {
         };
 
         //global fonts for chart
-        Chart.defaults.global.defaultFontFamily = "Comic Sans Ms";
+        Chart.defaults.global.defaultFontFamily = "Verdana";
 
         /**
          *  Finally... Chart constructing using previously created custom options or other passed options (if any)
@@ -534,6 +535,10 @@ var Charts = (function () {
  */
 var Display = (function () {
 
+    /**
+     * @public
+     * @description Display current weather informations
+     */
     var display_currentWeather = function ($container, currentWeatherData) {
 
         //all details for current potato weather
@@ -552,7 +557,16 @@ var Display = (function () {
             time = currentWeatherData.time,
             icon = currentWeatherData.icon;
 
-        var template = 'In progress...'; //TODO template for current weather here
+        var template = '';
+        template += '<p>Apparent Temperature: ' + apparentTemp + Weather.get_weatherUnits().t + '</p>';
+        template += '<p>Temperature: ' + temperature + Weather.get_weatherUnits().t + '</p>';
+        template += '<p>Humidity: ' + humidity + '</p>';
+        template += '<p>Precipitations Probability: ' + precipProbability + '%</p>';
+        template += '<p>Precipitations Intensity: ' + precipIntensity + Weather.get_weatherUnits().p + '</p>';
+        template += '<p>Precipitations Type: ' + (precipType || "No precipitations :)") + '</p>';
+        template += '<p>Preassure: ' + pressure + '</p>';
+        template += '<p>Wind Speed: ' + windSpeed + '</p>';
+        template += '<p>Wind Bearing: ' + windBearing + '</p>';
 
         $container.empty().append(template);
     };
@@ -624,7 +638,7 @@ var WeatherApp = (function () {
         var weatherInfo = Api.get_weatherInfo(Helpers.get_locationDetails().lat, Helpers.get_locationDetails().long);
         //then:
         weatherInfo.done(function (statistics) {
-            
+
             //construct weather details
             Weather.set_weatherDetails(statistics);
             //create chart ($container, data, customType, customOptions)
