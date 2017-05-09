@@ -147,6 +147,54 @@ var Weather = (function () {
 
     /**
      * @private
+     * @description Construct daily weather forecast
+     */
+    var get_dailyForecast = function(){
+
+        var maxTemperatureData = [];
+        var allTempDetails = [];
+        var maxPrecipDetails = [];
+        var allPrecipDetails = [];
+        var weekDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        var days = [];
+
+        weather_details.daily.data.forEach(function (weatherPerDay, index) {
+
+            maxTemperatureData.push(weatherPerDay.temperatureMax);
+            maxPrecipDetails.push((weatherPerDay.precipProbability * 100).toFixed());
+
+            var time = new Date(weatherPerDay.time * 1000);
+            var dayName = weekDays[time.getDay()];
+            days.push(dayName);
+
+
+            allTempDetails.push([
+                'Max: ' + weatherPerDay.temperatureMax + Weather.get_weatherUnits().t,
+                'MaxTime: ' + Helpers.get_hourFromTimestamp(weatherPerDay.temperatureMaxTime),
+                'Min: ' + weatherPerDay.temperatureMin + Weather.get_weatherUnits().t,
+                'MinTime: ' + Helpers.get_hourFromTimestamp(weatherPerDay.temperatureMinTime),
+            ]);
+
+            allPrecipDetails.push([
+                'Probability: ' + (weatherPerDay.precipProbability * 100).toFixed() + '%',
+                'Intensity: ' + (weatherPerDay.precipIntensity) + Weather.get_weatherUnits().p,
+                'Max Intensity: ' + (weatherPerDay.precipIntensityMax) + Weather.get_weatherUnits().p,
+                'Type: ' + weatherPerDay.precipType
+            ]);
+        });
+
+        return {
+            dailyMaxTemp : maxTemperatureData,
+            dailyAllTemp: allTempDetails,
+            dailyMaxPrecip: maxPrecipDetails,
+            dailyAllPrecip : allPrecipDetails,
+            days: days
+        };
+    }
+
+
+    /**
+     * @private
      * @description Set unit measurement for different zones (eg. EU: Degrees Celsius for Temperature, Millimeters per hour for Precipitations etc)
      */
     var get_weatherUnits = function () { //TODO: add units for all tracked weather information
@@ -189,10 +237,12 @@ var Weather = (function () {
      * Public Exports
      */
     var PUBLIC = {
-
+        //set
         set_weatherDetails: set_weatherDetails,
+        //get
         get_weatherDetails: get_weatherDetails,
-        get_weatherUnits: get_weatherUnits
+        get_weatherUnits: get_weatherUnits,
+        get_dailyForecast: get_dailyForecast
     };
 
     return PUBLIC;
@@ -211,37 +261,7 @@ var Charts = (function () {
         //chart container
         var ctx = $container;
 
-        var temperatureData = [];
-        var tempDetails = [];
-        var precipDetails = [];
-        var precipitationsData = [];
-        var weekDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        var days = [];
-
-        providedData.data.forEach(function (weatherPerDay, index) {
-
-            temperatureData.push(weatherPerDay.temperatureMax);
-            precipitationsData.push((weatherPerDay.precipProbability * 100).toFixed());
-
-            var time = new Date(weatherPerDay.time * 1000);
-            var dayName = weekDays[time.getDay()];
-            days.push(dayName);
-
-
-            tempDetails.push([
-                'Max: ' + weatherPerDay.temperatureMax + Weather.get_weatherUnits().t,
-                'MaxTime: ' + Helpers.get_hourFromTimestamp(weatherPerDay.temperatureMaxTime),
-                'Min: ' + weatherPerDay.temperatureMin + Weather.get_weatherUnits().t,
-                'MinTime: ' + Helpers.get_hourFromTimestamp(weatherPerDay.temperatureMinTime),
-            ]);
-
-            precipDetails.push([
-                'Probability: ' + (weatherPerDay.precipProbability * 100).toFixed() + '%',
-                'Intensity: ' + (weatherPerDay.precipIntensity) + Weather.get_weatherUnits().p,
-                'Max Intensity: ' + (weatherPerDay.precipIntensityMax) + Weather.get_weatherUnits().p,
-                'Type: ' + weatherPerDay.precipType
-            ]);
-        });
+        var dailyForecast = Weather.get_dailyForecast();
 
         var c = document.getElementById("weatherChart");
         var d = c.getContext("2d");
@@ -260,8 +280,8 @@ var Charts = (function () {
         var temperature = {
             id: "Temp",
             label: "Temperature",
-            data: temperatureData,
-            moreDetails: tempDetails,
+            data: dailyForecast.dailyMaxTemp,
+            moreDetails: dailyForecast.dailyAllTemp,
             backgroundColor: temperatureGradient,
             borderColor: "rgba(255, 51, 0, 1)",
             borderCapStyle: 'butt',
@@ -284,8 +304,8 @@ var Charts = (function () {
         var precipitations = {
             id: "Precip",
             label: "Precipitations",
-            data: precipitationsData,
-            moreDetails: precipDetails,
+            data: dailyForecast.dailyMaxPrecip,
+            moreDetails: dailyForecast.dailyAllPrecip,
             backgroundColor: precipitationsGradient,
             borderColor: "rgba(75,192,192,1)",
             borderCapStyle: 'butt',
@@ -310,7 +330,7 @@ var Charts = (function () {
         var weatherChart = new Chart(ctx, {
             type: customType || 'bar',
             data: {
-                labels: days,
+                labels: dailyForecast.days,
                 datasets: [temperature, precipitations]
             },
             options: {
@@ -424,8 +444,6 @@ var Charts = (function () {
                 }
             }
         });
-
-
     };
 
 
