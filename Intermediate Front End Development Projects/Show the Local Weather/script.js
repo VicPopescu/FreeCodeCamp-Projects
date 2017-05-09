@@ -152,7 +152,7 @@ var Weather = (function () {
     var get_weatherUnits = function () { //TODO: add units for all tracked weather information
 
         var localUnits = {};
-        
+
         //todo add units for more (wind, etc)
         switch (units) {
             case 'ca':
@@ -258,6 +258,7 @@ var Charts = (function () {
 
         //TODO: make a generic constructor to avoid code repetitions
         var temperature = {
+            id: "Temp",
             label: "Temperature",
             data: temperatureData,
             moreDetails: tempDetails,
@@ -276,10 +277,12 @@ var Charts = (function () {
             pointHoverBorderWidth: 2,
             pointRadius: 1,
             pointHitRadius: 10,
-            yAxisID: 'Temp'
+            yAxisID: 'Temp',
+            stack: 'Temp'
         };
 
         var precipitations = {
+            id: "Precip",
             label: "Precipitations",
             data: precipitationsData,
             moreDetails: precipDetails,
@@ -298,37 +301,40 @@ var Charts = (function () {
             pointHoverBorderWidth: 2,
             pointRadius: 1,
             pointHitRadius: 10,
-            yAxisID: 'Precip'
+            yAxisID: 'Precip',
+            stack: 'Precip'
         };
 
 
         //build chart
-        var myChart = new Chart(ctx, {
+        var weatherChart = new Chart(ctx, {
             type: customType || 'bar',
             data: {
                 labels: days,
-                datasets: [precipitations, temperature]
+                datasets: [temperature, precipitations]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: true,
                 animation: {
                     easing: 'easeInOutQuad',
-                    duration: 520
+                    duration: 1000
                 },
                 scales: {
                     xAxes: [{
                         gridLines: {
-                            color: 'rgba(200, 200, 200, 0.05)'
+                            color: 'rgba(200, 200, 200, 0.1)'
                         }
                     }],
                     yAxes: [{
                         id: 'Temp',
                         type: 'linear',
                         position: 'left',
+                        stacked: true,
+                        gridLines: {
+                            color: 'rgba(255, 51, 0, 0.2)'
+                        },
                         ticks: {
-                            max: 160,
-                            min: 0,
                             fontColor: temperatureGradient,
                             callback: function (label, index, labels) {
                                 return label + Weather.get_weatherUnits().t;
@@ -342,20 +348,20 @@ var Charts = (function () {
                         id: 'Precip',
                         type: 'linear',
                         position: 'right',
+                        stacked: true,
+                        gridLines: {
+                            color: 'rgba(75, 192, 192, 0.2)'
+                        },
                         ticks: {
-                            max: 100,
-                            min: 0,
                             fontColor: precipitationsGradient,
                             callback: function (label, index, labels) {
                                 return label + '%';
                             }
                         },
                         scaleLabel: {
+                            id: 'Temp',
                             display: true,
-                            labelString: 'Precipitations'
-                        },
-                        gridLines: {
-                            color: 'rgba(200, 200, 200, 0.08)'
+                            labelString: 'Precipitations probabilty %'
                         }
                     }]
                 },
@@ -365,7 +371,22 @@ var Charts = (function () {
                     }
                 },
                 legend: {
-                    position: 'bottom'
+                    position: 'bottom',
+                    onClick: function (event, legendItem) {
+
+                        var datasetIndex = legendItem.datasetIndex;
+                        var datasetId = weatherChart.data.datasets[datasetIndex].id;
+
+                        if (weatherChart.data.datasets[datasetIndex]._meta[0].hidden) {
+                            weatherChart.data.datasets[datasetIndex]._meta[0].hidden = false;
+                            weatherChart.scales[datasetId].options.scaleLabel.display = true;
+                        } else {
+                            weatherChart.data.datasets[datasetIndex]._meta[0].hidden = true;
+                            weatherChart.scales[datasetId].options.scaleLabel.display = false;
+                            
+                        }
+                        weatherChart.update();
+                    }
                 },
                 point: {
                     backgroundColor: 'green'
@@ -421,6 +442,8 @@ var Api = (function () {
      * @description Get a weather informations from {@link api.darksky.net/forecast Forecast}
      */
     var get_weatherInfo = function (latitude, longitude) {
+
+        console.log(latitude, longitude)
 
         var url = "https://crossorigin.me/https://api.darksky.net/forecast/d212e752e77024fa82c5713e0debad8b/" + latitude + "," + longitude + "?units=auto&exclude=minutely";
 
