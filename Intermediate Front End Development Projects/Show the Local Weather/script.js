@@ -286,8 +286,8 @@ var Charts = (function () {
         var d = c.getContext("2d");
 
         /*
-        *   Chart color settings
-        */
+         *   Chart color settings
+         */
         //creating color gradients for temperature
         var temperatureGradient = d.createLinearGradient(0, 0, 0, 450);
         temperatureGradient.addColorStop(0, 'rgba(255, 102, 0, 0.8)');
@@ -326,7 +326,7 @@ var Charts = (function () {
             stack: 'Temp'
         };
 
-        
+
         /**
          * Custom Precipitations dataset
          */
@@ -373,6 +373,8 @@ var Charts = (function () {
             },
             scaleLabel: {
                 display: true,
+                fontColor: 'rgba(255, 51, 0, 1)',
+                fontSize: 14,
                 labelString: 'Temperature ' + Weather.get_weatherUnits().t
             }
         }, {
@@ -386,12 +388,14 @@ var Charts = (function () {
             ticks: {
                 fontColor: precipitationsGradient,
                 callback: function (label, index, labels) {
-                    return label + '%';
+                    return label ? label + '%' : "";
                 }
             },
             scaleLabel: {
                 id: 'Temp',
                 display: true,
+                fontColor: 'rgba(75, 192, 192, 1)',
+                fontSize: 14,
                 labelString: 'Precipitations probabilty %'
             }
         }];
@@ -453,7 +457,10 @@ var Charts = (function () {
                 xAxes: [{
                     gridLines: {
                         color: 'rgba(200, 200, 200, 0.1)'
-                    }
+                    },
+                    ticks: {
+                        fontColor: 'rgba(255, 255, 255, 0.7)',
+                    },
                 }],
                 yAxes: customWeatherYAxes
             },
@@ -464,17 +471,19 @@ var Charts = (function () {
             },
             legend: {
                 position: 'bottom',
+                labels: {
+                    fontSize: 12,
+                    fontColor: 'rgba(255, 255, 255, 0.7)'
+                },
                 onClick: legend_onClick
             },
             tooltips: {
                 backgroundColor: 'rgba(49, 49, 52, 0.7)',
-                bodyFontFamily: 'Arial',
                 bodyFontColor: 'rgba(255, 255, 255, 0.7)',
                 bodyFontSize: 16,
                 bodySpacing: 10,
                 caretSize: 10,
                 cornerRadius: 4,
-                titleFontFamily: 'Arial',
                 titleFontColor: 'rgba(255, 255, 255, 0.9)',
                 titleFontSize: 18,
                 titleSpacing: 10,
@@ -486,9 +495,11 @@ var Charts = (function () {
             }
         };
 
+        //global fonts for chart
+        Chart.defaults.global.defaultFontFamily = "Comic Sans Ms";
 
         /**
-         *  Chart constructing
+         *  Finally... Chart constructing using previously created custom options or other passed options (if any)
          */
         var weatherChart = new Chart($container, {
             type: customType || 'bar',
@@ -554,7 +565,7 @@ var Api = (function () {
 
 /**
  * @public
- * @description Main application logic
+ * @description Main application logic. This makes the entire potato running
  */
 var WeatherApp = (function () {
 
