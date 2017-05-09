@@ -118,7 +118,6 @@ var Helpers = (function () {
  */
 var Weather = (function () {
 
-
     //weather details
     var all_weather_details = {};
     var daily_weather_details = {};
@@ -155,13 +154,14 @@ var Weather = (function () {
                 return current_weather_details;
             default:
                 break;
-        }
+        };
     };
 
 
     /**
      * @private
      * @description Construct daily weather forecast
+     * @returns {object} Daily forecast data
      */
     var get_dailyForecast = function () {
 
@@ -172,7 +172,7 @@ var Weather = (function () {
         var weekDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
         var days = [];
 
-        all_weather_details.daily.data.forEach(function (weatherPerDay, index) {
+        daily_weather_details.data.forEach(function (weatherPerDay, index) {
 
             maxTemperatureData.push(weatherPerDay.temperatureMax);
             maxPrecipDetails.push((weatherPerDay.precipProbability * 100).toFixed());
@@ -193,16 +193,16 @@ var Weather = (function () {
                 'Probability: ' + (weatherPerDay.precipProbability * 100).toFixed() + '%',
                 'Intensity: ' + (weatherPerDay.precipIntensity) + get_weatherUnits().p,
                 'Max Intensity: ' + (weatherPerDay.precipIntensityMax) + get_weatherUnits().p,
-                'Type: ' + weatherPerDay.precipType
+                'Type: ' + (weatherPerDay.precipType || "No precipitations! :)")
             ]);
         });
 
         return {
-            dailyMaxTemp: maxTemperatureData,
-            dailyAllTemp: allTempDetails,
-            dailyMaxPrecip: maxPrecipDetails,
-            dailyAllPrecip: allPrecipDetails,
-            days: days
+            dailyMaxTemp: maxTemperatureData, // Max temperature for next days. The chart "temperature" lines will be based on this data
+            dailyAllTemp: allTempDetails, // More information about temperature. This will be displayed in the chart temperature tooltip
+            dailyMaxPrecip: maxPrecipDetails, // Max precipitations for next days. The chart "precipitations" lines will be based on this data
+            dailyAllPrecip: allPrecipDetails, // More information about precipitations. This will be displayed in the chart precipitations tooltip
+            days: days // All days with data from forecast (starting on current day and next 7 days, usually)
         };
     }
 
@@ -238,7 +238,7 @@ var Weather = (function () {
             case 'us':
                 localUnits = {
                     t: '\u00B0F',
-                    p: ' inches/h'
+                    p: ' inches/h' //I guess?
                 };
                 break;
             default:
@@ -270,27 +270,38 @@ var Weather = (function () {
  */
 var Charts = (function () {
 
+    /**
+     * @public
+     * @description Create chart
+     * @param {object} $container Target container, where the chart will be contained
+     * @param {object} providedData Data to be displayed in the chart
+     * @param {string} customType What type of chart should be (line, bar, pie etc). In this case only line chart applies
+     * @param {object} customOptions Null || Custom options to replace chart options object
+     */
     var create_chart = function ($container, providedData, customType, customOptions) {
-
-        //chart container
-        var ctx = $container;
 
         var dailyForecast = Weather.get_dailyForecast();
 
         var c = document.getElementById("weatherChart");
         var d = c.getContext("2d");
 
+        /*
+        *   Chart color settings
+        */
+        //creating color gradients for temperature
         var temperatureGradient = d.createLinearGradient(0, 0, 0, 450);
         temperatureGradient.addColorStop(0, 'rgba(255, 102, 0, 0.8)');
         temperatureGradient.addColorStop(0.5, 'rgba(255, 102, 0, 0.25)');
         temperatureGradient.addColorStop(1, 'rgba(255, 102, 0, 0)');
-
+        //creating color gradients for precipitations
         var precipitationsGradient = d.createLinearGradient(0, 0, 0, 450);
         precipitationsGradient.addColorStop(0, 'rgba(0, 204, 204, 0.8)');
         precipitationsGradient.addColorStop(0.5, 'rgba(0, 204, 204, 0.25)');
         precipitationsGradient.addColorStop(1, 'rgba(0, 204, 204, 0)');
 
-        //TODO: make a generic constructor to avoid code repetitions
+        /**
+         * Custom Temperature dataset
+         */
         var temperature = {
             id: "Temp",
             label: "Temperature",
@@ -315,6 +326,10 @@ var Charts = (function () {
             stack: 'Temp'
         };
 
+        
+        /**
+         * Custom Precipitations dataset
+         */
         var precipitations = {
             id: "Precip",
             label: "Precipitations",
@@ -339,124 +354,149 @@ var Charts = (function () {
             stack: 'Precip'
         };
 
+        /**
+         * Custom Y axes properties
+         */
+        var customWeatherYAxes = [{
+            id: 'Temp',
+            type: 'linear',
+            position: 'left',
+            stacked: true,
+            gridLines: {
+                color: 'rgba(255, 51, 0, 0.1)'
+            },
+            ticks: {
+                fontColor: temperatureGradient,
+                callback: function (label, index, labels) {
+                    return label + Weather.get_weatherUnits().t;
+                }
+            },
+            scaleLabel: {
+                display: true,
+                labelString: 'Temperature ' + Weather.get_weatherUnits().t
+            }
+        }, {
+            id: 'Precip',
+            type: 'linear',
+            position: 'right',
+            stacked: true,
+            gridLines: {
+                color: 'rgba(75, 192, 192, 0.1)'
+            },
+            ticks: {
+                fontColor: precipitationsGradient,
+                callback: function (label, index, labels) {
+                    return label + '%';
+                }
+            },
+            scaleLabel: {
+                id: 'Temp',
+                display: true,
+                labelString: 'Precipitations probabilty %'
+            }
+        }];
 
-        //build chart
-        var weatherChart = new Chart(ctx, {
+        /**
+         * Chart legend "on click" handler. Toggling chart data for each dataset
+         */
+        var legend_onClick = function (event, legendItem) {
+
+            var datasetIndex = legendItem.datasetIndex;
+            var datasetId = weatherChart.data.datasets[datasetIndex].id;
+
+            if (weatherChart.data.datasets[datasetIndex]._meta[0].hidden) {
+                weatherChart.data.datasets[datasetIndex]._meta[0].hidden = false;
+                weatherChart.scales[datasetId].options.scaleLabel.display = true;
+            } else {
+                weatherChart.data.datasets[datasetIndex]._meta[0].hidden = true;
+                weatherChart.scales[datasetId].options.scaleLabel.display = false;
+
+            }
+            weatherChart.update();
+        };
+
+
+        /**
+         * Chart tooltips callbacks to customize displayed informations
+         */
+        var weatherTooltipCallbacks = {
+
+            title: function (tooltipItem, data) {
+
+                var datasetIndex = tooltipItem[0].datasetIndex;
+                var label1 = tooltipItem[0].xLabel;
+                var label2 = data.datasets[datasetIndex].label;
+
+                return label1 + "'s " + label2 || "Potato Title not found...";
+            },
+            label: function (tooltipItems, data) {
+
+                var datasetIndex = tooltipItems.datasetIndex;
+                var tooltopIndex = tooltipItems.index;
+
+                return data.datasets[datasetIndex].moreDetails[tooltopIndex] || "Potato Label not found...";
+            }
+        };
+
+
+        /**
+         * Chart custom options for weather chart
+         */
+        var weatherChartOptions = {
+            responsive: true,
+            maintainAspectRatio: true,
+            animation: {
+                easing: 'easeInOutQuad',
+                duration: 1000
+            },
+            scales: {
+                xAxes: [{
+                    gridLines: {
+                        color: 'rgba(200, 200, 200, 0.1)'
+                    }
+                }],
+                yAxes: customWeatherYAxes
+            },
+            elements: {
+                line: {
+                    tension: 0.4
+                }
+            },
+            legend: {
+                position: 'bottom',
+                onClick: legend_onClick
+            },
+            tooltips: {
+                backgroundColor: 'rgba(49, 49, 52, 0.7)',
+                bodyFontFamily: 'Arial',
+                bodyFontColor: 'rgba(255, 255, 255, 0.7)',
+                bodyFontSize: 16,
+                bodySpacing: 10,
+                caretSize: 10,
+                cornerRadius: 4,
+                titleFontFamily: 'Arial',
+                titleFontColor: 'rgba(255, 255, 255, 0.9)',
+                titleFontSize: 18,
+                titleSpacing: 10,
+                titleMarginBottom: 10,
+                displayColors: false,
+                xPadding: 10,
+                yPadding: 10,
+                callbacks: weatherTooltipCallbacks
+            }
+        };
+
+
+        /**
+         *  Chart constructing
+         */
+        var weatherChart = new Chart($container, {
             type: customType || 'bar',
             data: {
                 labels: dailyForecast.days,
                 datasets: [temperature, precipitations]
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                animation: {
-                    easing: 'easeInOutQuad',
-                    duration: 1000
-                },
-                scales: {
-                    xAxes: [{
-                        gridLines: {
-                            color: 'rgba(200, 200, 200, 0.1)'
-                        }
-                    }],
-                    yAxes: [{
-                        id: 'Temp',
-                        type: 'linear',
-                        position: 'left',
-                        stacked: true,
-                        gridLines: {
-                            color: 'rgba(255, 51, 0, 0.2)'
-                        },
-                        ticks: {
-                            fontColor: temperatureGradient,
-                            callback: function (label, index, labels) {
-                                return label + Weather.get_weatherUnits().t;
-                            }
-                        },
-                        scaleLabel: {
-                            display: true,
-                            labelString: 'Temperature ' + Weather.get_weatherUnits().t
-                        }
-                    }, {
-                        id: 'Precip',
-                        type: 'linear',
-                        position: 'right',
-                        stacked: true,
-                        gridLines: {
-                            color: 'rgba(75, 192, 192, 0.2)'
-                        },
-                        ticks: {
-                            fontColor: precipitationsGradient,
-                            callback: function (label, index, labels) {
-                                return label + '%';
-                            }
-                        },
-                        scaleLabel: {
-                            id: 'Temp',
-                            display: true,
-                            labelString: 'Precipitations probabilty %'
-                        }
-                    }]
-                },
-                elements: {
-                    line: {
-                        tension: 0.4
-                    }
-                },
-                legend: {
-                    position: 'bottom',
-                    onClick: function (event, legendItem) {
-
-                        var datasetIndex = legendItem.datasetIndex;
-                        var datasetId = weatherChart.data.datasets[datasetIndex].id;
-
-                        if (weatherChart.data.datasets[datasetIndex]._meta[0].hidden) {
-                            weatherChart.data.datasets[datasetIndex]._meta[0].hidden = false;
-                            weatherChart.scales[datasetId].options.scaleLabel.display = true;
-                        } else {
-                            weatherChart.data.datasets[datasetIndex]._meta[0].hidden = true;
-                            weatherChart.scales[datasetId].options.scaleLabel.display = false;
-
-                        }
-                        weatherChart.update();
-                    }
-                },
-                tooltips: {
-                    backgroundColor: 'rgba(49, 49, 52, 0.7)',
-                    bodyFontFamily: 'Arial',
-                    bodyFontColor: 'rgba(255, 255, 255, 0.7)',
-                    bodyFontSize: 16,
-                    bodySpacing: 10,
-                    caretSize: 10,
-                    cornerRadius: 4,
-                    titleFontFamily: 'Arial',
-                    titleFontColor: 'rgba(255, 255, 255, 0.9)',
-                    titleFontSize: 18,
-                    titleSpacing: 10,
-                    titleMarginBottom: 10,
-                    displayColors: false,
-                    xPadding: 10,
-                    yPadding: 10,
-                    callbacks: {
-                        title: function (tooltipItem, data) {
-
-                            var datasetIndex = tooltipItem[0].datasetIndex;
-                            var label1 = tooltipItem[0].xLabel;
-                            var label2 = data.datasets[datasetIndex].label;
-
-                            return label1 + "'s " + label2 || "Potato Title not found...";
-                        },
-                        label: function (tooltipItems, data) {
-
-                            var datasetIndex = tooltipItems.datasetIndex;
-                            var tooltopIndex = tooltipItems.index;
-
-                            return data.datasets[datasetIndex].moreDetails[tooltopIndex] || "Potato Label not found...";
-                        }
-                    }
-                }
-            }
+            options: customOptions || weatherChartOptions
         });
     };
 

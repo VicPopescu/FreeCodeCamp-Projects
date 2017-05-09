@@ -76,6 +76,7 @@ main {
     margin-top: 50px;
     height: auto;
     width: 80vw;
+    max-width: 1000px;
 }
 
 #weatherChart {
