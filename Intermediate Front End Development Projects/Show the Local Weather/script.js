@@ -120,7 +120,9 @@ var Weather = (function () {
 
 
     //weather details
-    var weather_details = {};
+    var all_weather_details = {};
+    var daily_weather_details = {};
+    var current_weather_details = {};
     var units;
 
 
@@ -130,18 +132,30 @@ var Weather = (function () {
      */
     var set_weatherDetails = function (weatherData) {
 
-        weather_details = weatherData;
-        units = weather_details.flags.units;
+        all_weather_details = weatherData;
+        daily_weather_details = weatherData.daily;
+        current_weather_details = weatherData.currently;
+        units = all_weather_details.flags.units;
     };
 
 
     /**
      * @private
-     * @description Construct weather details
+     * @description Return weather details
+     * @param {string} flag Which details need to be fetched (all, daily, curently)
      */
-    var get_weatherDetails = function () {
+    var get_weather_details = function (flag) {
 
-        return weather_details;
+        switch (flag) {
+            case 'all':
+                return all_weather_details;
+            case 'daily':
+                return daily_weather_details;
+            case 'curently':
+                return current_weather_details;
+            default:
+                break;
+        }
     };
 
 
@@ -149,7 +163,7 @@ var Weather = (function () {
      * @private
      * @description Construct daily weather forecast
      */
-    var get_dailyForecast = function(){
+    var get_dailyForecast = function () {
 
         var maxTemperatureData = [];
         var allTempDetails = [];
@@ -158,7 +172,7 @@ var Weather = (function () {
         var weekDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
         var days = [];
 
-        weather_details.daily.data.forEach(function (weatherPerDay, index) {
+        all_weather_details.daily.data.forEach(function (weatherPerDay, index) {
 
             maxTemperatureData.push(weatherPerDay.temperatureMax);
             maxPrecipDetails.push((weatherPerDay.precipProbability * 100).toFixed());
@@ -169,25 +183,25 @@ var Weather = (function () {
 
 
             allTempDetails.push([
-                'Max: ' + weatherPerDay.temperatureMax + Weather.get_weatherUnits().t,
+                'Max: ' + weatherPerDay.temperatureMax + get_weatherUnits().t,
                 'MaxTime: ' + Helpers.get_hourFromTimestamp(weatherPerDay.temperatureMaxTime),
-                'Min: ' + weatherPerDay.temperatureMin + Weather.get_weatherUnits().t,
+                'Min: ' + weatherPerDay.temperatureMin + get_weatherUnits().t,
                 'MinTime: ' + Helpers.get_hourFromTimestamp(weatherPerDay.temperatureMinTime),
             ]);
 
             allPrecipDetails.push([
                 'Probability: ' + (weatherPerDay.precipProbability * 100).toFixed() + '%',
-                'Intensity: ' + (weatherPerDay.precipIntensity) + Weather.get_weatherUnits().p,
-                'Max Intensity: ' + (weatherPerDay.precipIntensityMax) + Weather.get_weatherUnits().p,
+                'Intensity: ' + (weatherPerDay.precipIntensity) + get_weatherUnits().p,
+                'Max Intensity: ' + (weatherPerDay.precipIntensityMax) + get_weatherUnits().p,
                 'Type: ' + weatherPerDay.precipType
             ]);
         });
 
         return {
-            dailyMaxTemp : maxTemperatureData,
+            dailyMaxTemp: maxTemperatureData,
             dailyAllTemp: allTempDetails,
             dailyMaxPrecip: maxPrecipDetails,
-            dailyAllPrecip : allPrecipDetails,
+            dailyAllPrecip: allPrecipDetails,
             days: days
         };
     }
@@ -240,7 +254,7 @@ var Weather = (function () {
         //set
         set_weatherDetails: set_weatherDetails,
         //get
-        get_weatherDetails: get_weatherDetails,
+        get_weather_details: get_weather_details,
         get_weatherUnits: get_weatherUnits,
         get_dailyForecast: get_dailyForecast
     };
@@ -472,8 +486,6 @@ var Api = (function () {
      */
     var get_weatherInfo = function (latitude, longitude) {
 
-        console.log(latitude, longitude)
-
         var url = "https://crossorigin.me/https://api.darksky.net/forecast/d212e752e77024fa82c5713e0debad8b/" + latitude + "," + longitude + "?units=auto&exclude=minutely";
 
         return $.ajax({
@@ -518,14 +530,14 @@ var WeatherApp = (function () {
         var weatherInfo = Api.get_weatherInfo(Helpers.get_locationDetails().lat, Helpers.get_locationDetails().long);
         //then:
         weatherInfo.done(function (statistics) {
-            console.log(statistics);
+            //console.log(statistics);
             //construct location details
             //Helpers.set_locationDetails(statistics);
             //construct weather details
             Weather.set_weatherDetails(statistics);
 
             //create chart ($container, customChartData, customType, customOptions)
-            Charts.create_chart($weatherChart, Weather.get_weatherDetails().daily, 'line', null);
+            Charts.create_chart($weatherChart, Weather.get_weather_details('daily'), 'line', null);
         });
     });
 })();
