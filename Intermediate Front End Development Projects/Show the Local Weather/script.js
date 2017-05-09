@@ -5,8 +5,12 @@
 
 //Global DOM selectors
 var $root = $('main');
-var $chartContainer = $('#chartContainer');
-var $weatherChart = $('#weatherChart');
+var $welcome = $('#welcome');
+
+var $weatherInfoContainer = $('#weatherInfo'),
+    $currentWeatherContainer = $('#currentWeather'),
+    $chartContainer = $('#nextDaysWeather'),
+    $weatherChart = $('#weatherChart');
 
 /**
  * @public
@@ -141,7 +145,7 @@ var Weather = (function () {
     /**
      * @private
      * @description Return weather details
-     * @param {string} flag Which details need to be fetched (all, daily, curently)
+     * @param {string} flag Which details need to be fetched (all, daily, currently)
      */
     var get_weather_details = function (flag) {
 
@@ -150,7 +154,7 @@ var Weather = (function () {
                 return all_weather_details;
             case 'daily':
                 return daily_weather_details;
-            case 'curently':
+            case 'currently':
                 return current_weather_details;
             default:
                 break;
@@ -512,13 +516,53 @@ var Charts = (function () {
     };
 
 
-
     /**
      * Public Exports
      */
     var PUBLIC = {
 
         create_chart: create_chart
+    };
+
+    return PUBLIC;
+})();
+
+
+/**
+ * @public
+ * @description Components used for displaying different data to user
+ */
+var Display = (function () {
+
+    var display_currentWeather = function ($container, currentWeatherData) {
+
+        //all details for current potato weather
+        var apparentTemp = currentWeatherData.apparentTemperature,
+            temperature = currentWeatherData.temperature,
+            dewPoint = currentWeatherData.dewPoint,
+            cloudCover = currentWeatherData.cloudCover,
+            humidity = currentWeatherData.humidity,
+            ozone = currentWeatherData.ozone,
+            precipProbability = currentWeatherData.precipProbability,
+            precipIntensity = currentWeatherData.precipIntensity,
+            precipType = currentWeatherData.precipType,
+            pressure = currentWeatherData.pressure,
+            windSpeed = currentWeatherData.windSpeed,
+            windBearing = currentWeatherData.windBearing,
+            time = currentWeatherData.time,
+            icon = currentWeatherData.icon;
+
+        var template = 'In progress...'; //TODO template for current weather here
+
+        $container.empty().append(template);
+    };
+
+    /**
+     * Public Exports
+     */
+    var PUBLIC = {
+
+        display_currentWeather: display_currentWeather
     };
 
     return PUBLIC;
@@ -576,19 +620,17 @@ var WeatherApp = (function () {
 
         //user latitude and longitude
         Helpers.set_locationDetails(coords.latitude, coords.longitude);
-
         //get weather info using previously obtained coords
         var weatherInfo = Api.get_weatherInfo(Helpers.get_locationDetails().lat, Helpers.get_locationDetails().long);
         //then:
         weatherInfo.done(function (statistics) {
-            //console.log(statistics);
-            //construct location details
-            //Helpers.set_locationDetails(statistics);
+            
             //construct weather details
             Weather.set_weatherDetails(statistics);
-
-            //create chart ($container, customChartData, customType, customOptions)
+            //create chart ($container, data, customType, customOptions)
             Charts.create_chart($weatherChart, Weather.get_weather_details('daily'), 'line', null);
+            //display today's weather forecast ($container, data)
+            Display.display_currentWeather($currentWeatherContainer, Weather.get_weather_details('currently'));
         });
     });
 })();
