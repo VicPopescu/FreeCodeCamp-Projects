@@ -102,6 +102,17 @@ var Helpers = (function () {
 
 
     /**
+     * @private
+     * @description Get wind direction
+     */
+    var get_windDegToCompass = function(deg) {
+        var val = Math.floor((deg / 22.5) + 0.5);
+        var arr = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
+        return arr[(val % 16)];
+    };
+
+
+    /**
      * Public Exports
      */
     var PUBLIC = {
@@ -110,7 +121,8 @@ var Helpers = (function () {
         //gets
         get_location_coords: get_location_coords,
         get_locationDetails: get_locationDetails,
-        get_hourFromTimestamp: get_hourFromTimestamp
+        get_hourFromTimestamp: get_hourFromTimestamp,
+        get_windDegToCompass: get_windDegToCompass
     };
 
     return PUBLIC;
@@ -638,17 +650,16 @@ var Display = (function () {
          *      v : visibility
          *  press : pressure
          */
-
         var template = '';
         template += '<p>Apparent Temperature: ' + apparentTemp + Weather.get_weatherUnits().t + '</p>';
         template += '<p>Temperature: ' + temperature + Weather.get_weatherUnits().t + '</p>';
-        template += '<p>Humidity: ' + humidity * 100 + '%</p>';
-        template += '<p>Precipitations Probability: ' + precipProbability * 100 + '%</p>';
-        template += '<p>Precipitations Intensity: ' + precipIntensity + Weather.get_weatherUnits().p + '</p>';
-        template += '<p>Precipitations Type: ' + (precipType || "No precipitations :)") + '</p>';
+        template += '<p>Humidity: ' + (humidity * 100).toFixed() + '%</p>';
+        template += '<p>Precipitations Probability: ' + (precipProbability * 100).toFixed() + '%</p>';
+        precipIntensity && (template += '<p>Precipitations Intensity: ' + precipIntensity + Weather.get_weatherUnits().p + '</p>');
+        precipType && (template += '<p>Precipitations Type: ' + precipType + '</p>');
         template += '<p>Preassure: ' + pressure + Weather.get_weatherUnits().press + '</p>';
         template += '<p>Wind Speed: ' + windSpeed + Weather.get_weatherUnits().w + '</p>';
-        template += '<p>Wind Bearing: ' + windBearing + '</p>';
+        windBearing && (template += '<p>Wind Coming From: ' + Helpers.get_windDegToCompass(windBearing) + '</p>');
 
         //DOM manipualtions
         $container.empty().append(template);
@@ -723,9 +734,8 @@ var WeatherApp = (function () {
         var weatherInfo = Api.get_weatherInfo(Helpers.get_locationDetails().lat, Helpers.get_locationDetails().long);
         //then:
         weatherInfo.done(function (statistics) {
-
+            //display page after all data is fetched
             $document.fadeIn(1000);
-
             //construct weather details
             Weather.set_weatherDetails(statistics);
             //create chart ($container, data, customType, customOptions)

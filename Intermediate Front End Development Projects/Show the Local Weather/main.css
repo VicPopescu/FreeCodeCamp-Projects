@@ -95,6 +95,7 @@ html *:after {
     margin: -1.84375em;
     background: rgb(49, 49, 52);
     border-radius: 50%;
+    -webkit-box-shadow: -2.1875em 0.6875em 0 -0.6875em, 2.0625em 0.9375em 0 -0.9375em, 0 0 0 0.375em #fff, -2.1875em 0.6875em 0 -0.3125em #fff, 2.0625em 0.9375em 0 -0.5625em #fff;
     box-shadow: -2.1875em 0.6875em 0 -0.6875em, 2.0625em 0.9375em 0 -0.9375em, 0 0 0 0.375em #fff, -2.1875em 0.6875em 0 -0.3125em #fff, 2.0625em 0.9375em 0 -0.5625em #fff;
 }
 
@@ -107,12 +108,14 @@ html *:after {
     width: 4.5625em;
     height: 1em;
     background: rgb(49, 49, 52);
+    -webkit-box-shadow: 0 0.4375em 0 -0.0625em #fff;
     box-shadow: 0 0.4375em 0 -0.0625em #fff;
 }
 
 .cloud:nth-child(2) {
     z-index: 0;
     background: #fff;
+    -webkit-box-shadow: -2.1875em 0.6875em 0 -0.6875em #fff, 2.0625em 0.9375em 0 -0.9375em #fff, 0 0 0 0.375em #fff, -2.1875em 0.6875em 0 -0.3125em #fff, 2.0625em 0.9375em 0 -0.5625em #fff;
     box-shadow: -2.1875em 0.6875em 0 -0.6875em #fff, 2.0625em 0.9375em 0 -0.9375em #fff, 0 0 0 0.375em #fff, -2.1875em 0.6875em 0 -0.3125em #fff, 2.0625em 0.9375em 0 -0.5625em #fff;
     opacity: 0.3;
     transform: scale(0.5) translate(6em, -3em);
@@ -132,8 +135,8 @@ html *:after {
     margin: -1.25em;
     background: rgb(49, 49, 52);
     border-radius: 50%;
+    -webkit-box-shadow: 0 0 0 0.375em orangered;
     box-shadow: 0 0 0 0.375em orangered;
-    ;
     animation: spin 12s infinite linear;
 }
 
@@ -145,8 +148,8 @@ html *:after {
     height: 5em;
     margin: -1.25em;
     border-radius: 50%;
+    -webkit-box-shadow: 13px 13px 0 0 #fcf28f;
     box-shadow: 13px 13px 0 0 #fcf28f;
-    ;
 }
 
 .rays {
@@ -159,6 +162,7 @@ html *:after {
     margin-left: -0.1875em;
     background: orangered;
     border-radius: 0.25em;
+    -webkit-box-shadow: 0 5.375em orangered;
     box-shadow: 0 5.375em orangered;
 }
 
@@ -175,8 +179,8 @@ html *:after {
     transform-origin: 50% 3.25em;
     background: orangered;
     border-radius: 0.25em;
+    -webkit-box-shadow: 0 5.375em orangered;
     box-shadow: 0 5.375em orangered;
-    ;
 }
 
 .rays:before {
@@ -211,6 +215,7 @@ html *:after {
     margin: -1em 0 0 -0.25em;
     background: #0cf;
     border-radius: 100% 0 60% 50% / 60% 0 100% 50%;
+    -webkit-box-shadow: 0.625em 0.875em 0 -0.125em rgba(255, 255, 255, 0.2), -0.875em 1.125em 0 -0.125em rgba(255, 255, 255, 0.2), -1.375em -0.125em 0 rgba(255, 255, 255, 0.2);
     box-shadow: 0.625em 0.875em 0 -0.125em rgba(255, 255, 255, 0.2), -0.875em 1.125em 0 -0.125em rgba(255, 255, 255, 0.2), -1.375em -0.125em 0 rgba(255, 255, 255, 0.2);
     transform: rotate(-28deg);
     animation: rain 3s linear infinite;
@@ -334,16 +339,20 @@ html *:after {
 @keyframes rain {
     0% {
         background: #0cf;
+        -webkit-box-shadow: 0.625em 0.875em 0 -0.125em rgba(255, 255, 255, 0.2), -0.875em 1.125em 0 -0.125em rgba(255, 255, 255, 0.2), -1.375em -0.125em 0 #0cf;
         box-shadow: 0.625em 0.875em 0 -0.125em rgba(255, 255, 255, 0.2), -0.875em 1.125em 0 -0.125em rgba(255, 255, 255, 0.2), -1.375em -0.125em 0 #0cf;
     }
     25% {
+        -webkit-box-shadow: 0.625em 0.875em 0 -0.125em rgba(255, 255, 255, 0.2), -0.875em 1.125em 0 -0.125em #0cf, -1.375em -0.125em 0 rgba(255, 255, 255, 0.2);
         box-shadow: 0.625em 0.875em 0 -0.125em rgba(255, 255, 255, 0.2), -0.875em 1.125em 0 -0.125em #0cf, -1.375em -0.125em 0 rgba(255, 255, 255, 0.2);
     }
     50% {
         background: rgba(255, 255, 255, 0.3);
+        -webkit-box-shadow: 0.625em 0.875em 0 -0.125em #0cf, -0.875em 1.125em 0 -0.125em rgba(255, 255, 255, 0.2), -1.375em -0.125em 0 rgba(255, 255, 255, 0.2);
         box-shadow: 0.625em 0.875em 0 -0.125em #0cf, -0.875em 1.125em 0 -0.125em rgba(255, 255, 255, 0.2), -1.375em -0.125em 0 rgba(255, 255, 255, 0.2);
     }
     100% {
+        -webkit-box-shadow: 0.625em 0.875em 0 -0.125em rgba(255, 255, 255, 0.2), -0.875em 1.125em 0 -0.125em rgba(255, 255, 255, 0.2), -1.375em -0.125em 0 #0cf;
         box-shadow: 0.625em 0.875em 0 -0.125em rgba(255, 255, 255, 0.2), -0.875em 1.125em 0 -0.125em rgba(255, 255, 255, 0.2), -1.375em -0.125em 0 #0cf;
     }
 }
@@ -430,12 +439,15 @@ html {
     color: lightgray;
 }
 
-#currentWeatherContainer p{
+#currentWeatherContainer p {
     margin: 5px 0;
 }
 
 #nextDaysWeather {
     user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
     margin-top: 50px;
     width: 52vw;
     max-width: 800px;
@@ -491,6 +503,9 @@ html {
 footer {
     position: fixed;
     user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
     bottom: 0;
     right: -150px;
     top: auto;
