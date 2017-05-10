@@ -4,7 +4,8 @@
  */
 
 //Global DOM selectors
-var $root = $('main');
+var $document = $('html');
+var $root = $('#main');
 var $welcome = $('#welcome');
 
 var $weatherInfoContainer = $('#weatherInfo'),
@@ -220,30 +221,48 @@ var Weather = (function () {
 
         var localUnits = {};
 
-        //todo add units for more (wind, etc)
+        /** Legend:
+         *      t : temperature
+         *      p : precipitations
+         *      w : wind speed
+         *      v : visibility
+         *  press : pressure
+         */
         switch (units) {
             case 'ca':
                 localUnits = {
                     t: '\u00B0C',
-                    p: ' mm/h'
+                    p: ' mm/h',
+                    w: ' km/h',
+                    v: ' km',
+                    press: ' hPa'
                 };
                 break;
             case 'si':
                 localUnits = {
                     t: '\u00B0C',
-                    p: ' mm/h'
+                    p: ' mm/h',
+                    w: ' m/s',
+                    v: ' km',
+                    press: ' hPa'
                 };
                 break;
             case 'uk2':
                 localUnits = {
                     t: '\u00B0C',
-                    p: ' mm/h'
+                    p: ' mm/h',
+                    w: ' miles/h',
+                    v: ' miles',
+                    press: ' hPa'
                 };
                 break;
             case 'us':
                 localUnits = {
                     t: '\u00B0F',
-                    p: ' inches/h' //I guess?
+                    p: ' inches/h',
+                    w: ' miles/h',
+                    v: ' miles',
+                    press: ' mbar'
                 };
                 break;
             default:
@@ -612,20 +631,26 @@ var Display = (function () {
             time = currentWeatherData.time,
             icon = currentWeatherData.icon;
 
+        /** Legend:
+         *      t : temperature
+         *      p : precipitations
+         *      w : wind speed
+         *      v : visibility
+         *  press : pressure
+         */
+
         var template = '';
         template += '<p>Apparent Temperature: ' + apparentTemp + Weather.get_weatherUnits().t + '</p>';
         template += '<p>Temperature: ' + temperature + Weather.get_weatherUnits().t + '</p>';
-        template += '<p>Humidity: ' + humidity + '</p>';
-        template += '<p>Precipitations Probability: ' + precipProbability + '%</p>';
+        template += '<p>Humidity: ' + humidity * 100 + '%</p>';
+        template += '<p>Precipitations Probability: ' + precipProbability * 100 + '%</p>';
         template += '<p>Precipitations Intensity: ' + precipIntensity + Weather.get_weatherUnits().p + '</p>';
         template += '<p>Precipitations Type: ' + (precipType || "No precipitations :)") + '</p>';
-        template += '<p>Preassure: ' + pressure + '</p>';
-        template += '<p>Wind Speed: ' + windSpeed + '</p>';
+        template += '<p>Preassure: ' + pressure + Weather.get_weatherUnits().press + '</p>';
+        template += '<p>Wind Speed: ' + windSpeed + Weather.get_weatherUnits().w + '</p>';
         template += '<p>Wind Bearing: ' + windBearing + '</p>';
 
-        console.log(Weather.get_weatherIcon(icon));
-        console.log($container.parent());
-
+        //DOM manipualtions
         $container.empty().append(template);
         $container.siblings('.icon').hide();
         $container.siblings('.icon.' + Weather.get_weatherIcon(icon)).toggle(1500).css('display', 'inline-block');
@@ -698,6 +723,8 @@ var WeatherApp = (function () {
         var weatherInfo = Api.get_weatherInfo(Helpers.get_locationDetails().lat, Helpers.get_locationDetails().long);
         //then:
         weatherInfo.done(function (statistics) {
+
+            $document.fadeIn(1000);
 
             //construct weather details
             Weather.set_weatherDetails(statistics);
