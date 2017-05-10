@@ -214,7 +214,7 @@ var Weather = (function () {
 
     /**
      * @private
-     * @description Set unit measurement for different zones (eg. EU: Degrees Celsius for Temperature, Millimeters per hour for Precipitations etc)
+     * @description Get unit measurement for different zones (eg. EU: Degrees Celsius for Temperature, Millimeters per hour for Precipitations etc)
      */
     var get_weatherUnits = function () { //TODO: add units for all tracked weather information
 
@@ -252,6 +252,58 @@ var Weather = (function () {
         return localUnits;
     };
 
+
+    /**
+     * @private
+     * @description Get Weather Icon
+     */
+    var get_weatherIcon = function (icon) {
+
+        switch (icon) {
+            case "clear-day":
+                return 'sunny';
+
+            case "cloudy":
+                return 'cloudy';
+
+            case "partly-cloudy-day":
+                return 'partly-cloudy-day';
+
+            case "partly-cloudy-night":
+                return 'partly-cloudy-night';
+
+            case "thunderstorm":
+                return 'thunder-storm';
+
+            case "rain":
+                return 'rainy';
+
+            case "snow":
+                return 'flurries';
+
+            case "sleet":
+                return 'TODO';
+
+            case "wind":
+                return 'TODO';
+
+            case "fog":
+                return 'TODO';
+
+            case "clear-night":
+                return 'TODO';
+
+            case "hail":
+                return 'TODO';
+
+            case "tornado":
+                return 'TODO';
+
+            default:
+                return;
+        };
+    };
+
     /**
      * Public Exports
      */
@@ -261,7 +313,8 @@ var Weather = (function () {
         //get
         get_weather_details: get_weather_details,
         get_weatherUnits: get_weatherUnits,
-        get_dailyForecast: get_dailyForecast
+        get_dailyForecast: get_dailyForecast,
+        get_weatherIcon: get_weatherIcon
     };
 
     return PUBLIC;
@@ -380,7 +433,7 @@ var Charts = (function () {
                 display: true,
                 fontColor: 'rgba(255, 51, 0, 1)',
                 fontSize: 14,
-                labelString: 'Temperature ' + Weather.get_weatherUnits().t
+                labelString: 'Temp ' + Weather.get_weatherUnits().t
             }
         }, {
             id: 'Precip',
@@ -401,7 +454,7 @@ var Charts = (function () {
                 display: true,
                 fontColor: 'rgba(75, 192, 192, 1)',
                 fontSize: 14,
-                labelString: 'Precipitations probabilty %'
+                labelString: 'Precip prob %'
             }
         }];
 
@@ -501,7 +554,7 @@ var Charts = (function () {
         };
 
         //global fonts for chart
-        Chart.defaults.global.defaultFontFamily = "Verdana";
+        Chart.defaults.global.defaultFontFamily = "'Roboto', sans-serif";
 
         /**
          *  Finally... Chart constructing using previously created custom options or other passed options (if any)
@@ -541,6 +594,8 @@ var Display = (function () {
      */
     var display_currentWeather = function ($container, currentWeatherData) {
 
+        console.log(currentWeatherData);
+
         //all details for current potato weather
         var apparentTemp = currentWeatherData.apparentTemperature,
             temperature = currentWeatherData.temperature,
@@ -568,7 +623,12 @@ var Display = (function () {
         template += '<p>Wind Speed: ' + windSpeed + '</p>';
         template += '<p>Wind Bearing: ' + windBearing + '</p>';
 
+        console.log(Weather.get_weatherIcon(icon));
+        console.log($container.parent());
+
         $container.empty().append(template);
+        $container.siblings('.icon').hide();
+        $container.siblings('.icon.' + Weather.get_weatherIcon(icon)).toggle(1500).css('display', 'inline-block');
     };
 
     /**
