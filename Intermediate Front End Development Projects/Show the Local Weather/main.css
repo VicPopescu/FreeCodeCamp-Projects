@@ -500,6 +500,12 @@ html {
     width: 50px;
 }
 
+#WeatherIconFooter .rain,
+#WeatherIconFooter .sun{
+    background-color: rgba(0,0,0,0);
+    background-color: transparent
+}
+
 footer {
     position: fixed;
     user-select: none;
