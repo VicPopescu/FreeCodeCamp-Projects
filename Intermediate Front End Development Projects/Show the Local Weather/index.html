@@ -14,23 +14,34 @@
 
 <body>
     <main id="main">
+
+        <!--Welcome Header-->
         <section id="welcome">
             <p>Hello Potato!</p>
         </section>
+
+        <!--Weather Info-->
         <section id="weatherInfo">
+            <!--Current-->
             <section id="currentWeather">
                 <p>Current Weather Forecast:</p>
                 <section id='currentWeatherContainer'>
-
                 </section>
             </section>
+            <!--All week-->
             <section id="nextDaysWeather">
                 <p>Let's find out the weather mood for the next few days :)</p>
                 <canvas id="weatherChart"></canvas>
             </section>
         </section>
 
+        <!--Footer Links-->
+        <section id='footerLinks'>
+            <a href='https://darksky.net/poweredby/' id='footer1' title='Powered by Dark Sky' target="_blank"></a>
+            <a href='http://www.chartjs.org/' id='footer2' title='Chart.js' target="_blank"></a>
+        </section>
 
+        <!--Trademark Footer-->
         <footer>
             <a href="https://codepen.io/VicPopescu/full/ONbXRb/" target="_blank">
                 <span>	2017 &nbsp; No rights reserved! &#8594;  &nbsp;&nbsp; </span>
@@ -39,6 +50,7 @@
                 </span>
             </a>
         </footer>
+
     </main>
     <!--   Scripts   -->
     <script src="http://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
