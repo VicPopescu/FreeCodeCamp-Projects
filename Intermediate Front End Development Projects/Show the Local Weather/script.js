@@ -35,21 +35,30 @@ var Helpers = (function () {
      */
     var error_handler = function (error) {
 
+        var message = "";
+
         switch (error.code) {
 
             case error.PERMISSION_DENIED:
-                console.log("User denied the request for Geolocation.");
+                message = "User denied the request for Geolocation.";
                 break;
             case error.POSITION_UNAVAILABLE:
-                console.log("Location information is unavailable.");
+                message = "Location information is unavailable.";
                 break;
             case error.TIMEOUT:
-                console.log("The request to get user location timed out.")
+                message = "The request to get user location timed out.";
                 break;
             case error.UNKNOWN_ERROR:
-                console.log("An unknown error occurred.");
+                message = "An unknown error occurred.";
                 break;
+            default:
+                message = "God know what happened...";
         };
+
+        $document.empty().append('OOOoopsie... :|   ' + message).css({
+            'padding-top': '10vh',
+            'text-align': 'center'
+        });
     };
 
 
@@ -106,7 +115,7 @@ var Helpers = (function () {
                     if (results[1]) {
 
                         $location.text('').text(results[1].formatted_address);
-                        
+
                         //find country name
                         // for (var i = 0; i < results[0].address_components.length; i++) {
                         //     for (var b = 0; b < results[0].address_components[i].types.length; b++) {
