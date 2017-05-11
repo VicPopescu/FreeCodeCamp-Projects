@@ -140,18 +140,6 @@ html *:after {
     animation: spin 12s infinite linear;
 }
 
-.moon {
-    position: absolute;
-    top: 14%;
-    left: 3%;
-    width: 5em;
-    height: 5em;
-    margin: -1.25em;
-    border-radius: 50%;
-    -webkit-box-shadow: 13px 13px 0 0 #fcf28f;
-    box-shadow: 13px 13px 0 0 #fcf28f;
-}
-
 .rays {
     position: absolute;
     top: -2em;
@@ -189,6 +177,96 @@ html *:after {
 
 .cloud+.sun {
     margin: -2em 1em;
+}
+
+.moon {
+    position: absolute;
+    top: 1em;
+    left: 2em;
+    width: 5em;
+    height: 5em;
+    margin: -1.25em;
+    border-radius: 50%;
+    -webkit-box-shadow: 13px 13px 0 0 #fcf28f;
+    box-shadow: 13px 13px 0 0 #fcf28f;
+}
+
+.star {
+    position: absolute;
+    top: 4em;
+    left: 10em;
+    color: lightblue;
+    width: 0px;
+    height: 0px;
+    border-right: 10px solid transparent;
+    border-bottom: 7px solid lightblue;
+    border-left: 10px solid transparent;
+    -moz-transform: rotate(35deg);
+    -webkit-transform: rotate(35deg);
+    -ms-transform: rotate(35deg);
+    -o-transform: rotate(35deg);
+}
+
+.star:before {
+    border-bottom: 8px solid lightblue;
+    border-left: 3px solid transparent;
+    border-right: 3px solid transparent;
+    position: absolute;
+    height: 0;
+    width: 0;
+    top: -5px;
+    left: -7px;
+    display: block;
+    content: '';
+    -webkit-transform: rotate(-35deg);
+    -moz-transform: rotate(-35deg);
+    -ms-transform: rotate(-35deg);
+    -o-transform: rotate(-35deg);
+}
+
+.star:after {
+    position: absolute;
+    display: block;
+    color: lightblue;
+    top: 1px;
+    left: -11px;
+    width: 0px;
+    height: 0px;
+    border-right: 10px solid transparent;
+    border-bottom: 7px solid lightblue;
+    border-left: 10px solid transparent;
+    -webkit-transform: rotate(-70deg);
+    -moz-transform: rotate(-70deg);
+    -ms-transform: rotate(-70deg);
+    -o-transform: rotate(-70deg);
+    content: '';
+}
+
+.star1 {
+    position: absolute;
+    top: 2em;
+    left: 7em;
+}
+
+.star2 {
+    position: absolute;
+    top: 6em;
+    left: 7em;
+}
+
+.star3 {
+    top: 6em;
+    left: -1em;
+}
+
+.star4 {
+    top: 3em;
+    left: 2em;
+}
+
+.star5 {
+    top: 7em;
+    left: 2em;
 }
 
 .rain,
@@ -501,8 +579,8 @@ html {
 }
 
 #WeatherIconFooter .rain,
-#WeatherIconFooter .sun{
-    background-color: rgba(0,0,0,0);
+#WeatherIconFooter .sun {
+    background-color: rgba(0, 0, 0, 0);
     background-color: transparent
 }
 

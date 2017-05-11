@@ -1,6 +1,7 @@
 /**
- * @author Victor Popescu {@link https://github.com/VicPopescu}
  * @description Component that displays local weather informations from an API provided by {@link https://darksky.net Dark Sky API}
+ * @author Victor Popescu {@link https://github.com/VicPopescu}
+ * 
  */
 
 //Global DOM selectors
@@ -14,12 +15,14 @@ var $weatherInfoContainer = $('#weatherInfo'),
     $chartContainer = $('#nextDaysWeather'),
     $weatherChart = $('#weatherChart');
 
+
 /**
  * @public
- * @description Object used to store any helper function
+ * @description Object used to store any helper functions
  */
 var Helpers = (function () {
 
+    //store details about user location
     var location_details = {};
 
     /**
@@ -48,7 +51,7 @@ var Helpers = (function () {
 
     /**
      * @private
-     * @description Construct location details (City, Country, Population etc)
+     * @description Construct location details (only coords for now)
      */
     var set_locationDetails = function (lat, long) {
         location_details.lat = lat;
@@ -58,30 +61,32 @@ var Helpers = (function () {
 
     /**
      * @public
-     * @description Get user location coordinates using HTML5 Geolocation
+     * @description Get user location coordinates using HTML5 Geolocation. This is async and used to get and later locally save user location details using "set_locationDetails" method.
      */
     var get_location_coords = function () {
 
+        //use deferred object so we can handle async functions
         var coords = $.Deferred();
-
+        //if browser support geolocation
         if (navigator.geolocation) {
-
+            //get user location details
             navigator.geolocation.getCurrentPosition(function (position) {
-
+                //get user coordinates
                 coords.resolve(position.coords);
 
             }, error_handler);
         } else {
             console.log("Geolocation is not supported by this browser.");
         }
-
+        //return a promise to be handled later
         return coords.promise();
     };
 
 
     /**
      * @private
-     * @description Get location details (City, Country, Population etc)
+     * @description Get location details. This is the only function for returning all user details in global scope.
+     * @return {object} location_details An object with user location details.
      */
     var get_locationDetails = function () {
 
@@ -91,24 +96,29 @@ var Helpers = (function () {
 
     /**
      * @private
-     * @description Parse timestamp and returns only the hour
+     * @description Parse a timestamp and returns only the hour.
+     * @return {string} t The hour obtained from the timestamp (eg. 12:00:00").
      */
     var get_hourFromTimestamp = function (time) {
 
-        var t = new Date(time * 1000).toLocaleString();
+        var t = new Date(time * 1000).toLocaleString().replace(/.+\,/, '');
 
-        return t.replace(/.+\,/, '');
+        return t;
     };
 
 
     /**
      * @private
      * @description Get wind direction
+     * @return {string} dir Wind direction
      */
-    var get_windDegToCompass = function(deg) {
+    var get_windDegToCompass = function (deg) {
+
         var val = Math.floor((deg / 22.5) + 0.5);
         var arr = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
-        return arr[(val % 16)];
+        var dir = arr[(val % 16)]
+
+        return dir;
     };
 
 
@@ -229,11 +239,11 @@ var Weather = (function () {
      * @private
      * @description Get unit measurement for different zones (eg. EU: Degrees Celsius for Temperature, Millimeters per hour for Precipitations etc)
      */
-    var get_weatherUnits = function () { //TODO: add units for all tracked weather information
+    var get_weatherUnits = function () {
 
         var localUnits = {};
 
-        /** Legend:
+        /** LEGEND:
          *      t : temperature
          *      p : precipitations
          *      w : wind speed
@@ -294,6 +304,9 @@ var Weather = (function () {
             case "clear-day":
                 return 'sunny';
 
+            case "clear-night":
+                return 'clear-moon';
+
             case "cloudy":
                 return 'cloudy';
 
@@ -312,6 +325,7 @@ var Weather = (function () {
             case "snow":
                 return 'flurries';
 
+                //TODO:
             case "sleet":
                 return 'TODO';
 
@@ -319,9 +333,6 @@ var Weather = (function () {
                 return 'TODO';
 
             case "fog":
-                return 'TODO';
-
-            case "clear-night":
                 return 'TODO';
 
             case "hail":
@@ -625,8 +636,6 @@ var Display = (function () {
      */
     var display_currentWeather = function ($container, currentWeatherData) {
 
-        console.log(currentWeatherData);
-
         //all details for current potato weather
         var apparentTemp = currentWeatherData.apparentTemperature,
             temperature = currentWeatherData.temperature,
@@ -643,13 +652,7 @@ var Display = (function () {
             time = currentWeatherData.time,
             icon = currentWeatherData.icon;
 
-        /** Legend:
-         *      t : temperature
-         *      p : precipitations
-         *      w : wind speed
-         *      v : visibility
-         *  press : pressure
-         */
+        //template construction
         var template = '';
         template += '<p>Apparent Temperature: ' + apparentTemp + Weather.get_weatherUnits().t + '</p>';
         template += '<p>Temperature: ' + temperature + Weather.get_weatherUnits().t + '</p>';
@@ -709,6 +712,7 @@ var Api = (function () {
      * Public exports
      */
     var PUBLIC = {
+
         get_weatherInfo: get_weatherInfo
     };
 
@@ -728,7 +732,7 @@ var WeatherApp = (function () {
     //then:
     getCoords.done(function (coords) {
 
-        //user latitude and longitude
+        //set user latitude and longitude
         Helpers.set_locationDetails(coords.latitude, coords.longitude);
         //get weather info using previously obtained coords
         var weatherInfo = Api.get_weatherInfo(Helpers.get_locationDetails().lat, Helpers.get_locationDetails().long);
@@ -742,6 +746,7 @@ var WeatherApp = (function () {
             Charts.create_chart($weatherChart, Weather.get_weather_details('daily'), 'line', null);
             //display today's weather forecast ($container, data)
             Display.display_currentWeather($currentWeatherContainer, Weather.get_weather_details('currently'));
+            //send me a cookie :)
         });
     });
 })();
