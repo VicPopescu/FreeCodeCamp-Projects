@@ -8,12 +8,15 @@
 var $document = $('html');
 var $root = $('#main');
 var $welcome = $('#welcome');
+var $unitsChange = $('#unitsChange');
 
 var $weatherInfoContainer = $('#weatherInfo'),
     $currentWeather = $('#currentWeather'),
     $currentWeatherContainer = $('#currentWeatherContainer'),
     $chartContainer = $('#nextDaysWeather'),
     $weatherChart = $('#weatherChart');
+
+var weatherChart;
 
 
 /**
@@ -385,6 +388,7 @@ var Charts = (function () {
         var c = document.getElementById("weatherChart");
         var d = c.getContext("2d");
 
+
         /*
          *   Chart color settings
          */
@@ -508,13 +512,18 @@ var Charts = (function () {
             var datasetIndex = legendItem.datasetIndex;
             var datasetId = weatherChart.data.datasets[datasetIndex].id;
 
-            if (weatherChart.data.datasets[datasetIndex]._meta[0].hidden) {
-                weatherChart.data.datasets[datasetIndex]._meta[0].hidden = false;
+            for (var key in weatherChart.data.datasets[datasetIndex]._meta) {
+                var i = key;
+            }
+
+            var a = weatherChart.data.datasets[datasetIndex]._meta[i];
+
+            if (a.hidden) {
+                a.hidden = false;
                 weatherChart.scales[datasetId].options.scaleLabel.display = true;
             } else {
-                weatherChart.data.datasets[datasetIndex]._meta[0].hidden = true;
+                a.hidden = true;
                 weatherChart.scales[datasetId].options.scaleLabel.display = false;
-
             }
             weatherChart.update();
         };
@@ -601,14 +610,17 @@ var Charts = (function () {
         /**
          *  Finally... Chart constructing using previously created custom options or other passed options (if any)
          */
-        var weatherChart = new Chart($container, {
+        //destroy previously created chart, if any, then create new chart instance
+        weatherChart && weatherChart.destroy() || (weatherChart = new Chart($container, {
             type: customType || 'bar',
             data: {
                 labels: dailyForecast.days,
                 datasets: [temperature, precipitations]
             },
             options: customOptions || weatherChartOptions
-        });
+        }))
+
+
     };
 
 
@@ -654,20 +666,21 @@ var Display = (function () {
 
         //template construction
         var template = '';
-        template += '<p>Apparent Temperature: ' + apparentTemp + Weather.get_weatherUnits().t + '</p>';
-        template += '<p>Temperature: ' + temperature + Weather.get_weatherUnits().t + '</p>';
-        template += '<p>Humidity: ' + (humidity * 100).toFixed() + '%</p>';
-        template += '<p>Precipitations Probability: ' + (precipProbability * 100).toFixed() + '%</p>';
-        precipIntensity && (template += '<p>Precipitations Intensity: ' + precipIntensity + Weather.get_weatherUnits().p + '</p>');
-        precipType && (template += '<p>Precipitations Type: ' + precipType + '</p>');
-        template += '<p>Preassure: ' + pressure + Weather.get_weatherUnits().press + '</p>';
-        template += '<p>Wind Speed: ' + windSpeed + Weather.get_weatherUnits().w + '</p>';
-        windBearing && (template += '<p>Wind Coming From: ' + Helpers.get_windDegToCompass(windBearing) + '</p>');
+        template += '<p>Apparent Temperature: <span class="lightblue">' + apparentTemp + Weather.get_weatherUnits().t + '</span></p>';
+        template += '<p>Temperature: <span class="lightblue">' + temperature + Weather.get_weatherUnits().t + '</span></p>';
+        template += '<p>Humidity: <span class="lightblue">' + (humidity * 100).toFixed() + '%</span></p>';
+        template += '<p>Precipitations Probability: <span class="lightblue">' + (precipProbability * 100).toFixed() + '%</span></p>';
+        precipIntensity && (template += '<p>Precipitations Intensity: <span class="lightblue">' + precipIntensity + Weather.get_weatherUnits().p + '</span></p>');
+        precipType && (template += '<p>Precipitations Type: <span class="lightblue">' + precipType + '</span></p>');
+        template += '<p>Preassure: <span class="lightblue">' + pressure + Weather.get_weatherUnits().press + '</span></p>';
+        template += '<p>Wind Speed: <span class="lightblue">' + windSpeed + Weather.get_weatherUnits().w + '</span></p>';
+        windBearing && (template += '<p>Wind Coming From: <span class="lightblue">' + Helpers.get_windDegToCompass(windBearing) + '</span></p>');
 
         //DOM manipualtions
         $container.empty().append(template);
         $container.siblings('.icon').hide();
-        $container.siblings('.icon.' + Weather.get_weatherIcon(icon)).toggle(1500).css('display', 'inline-block');
+        $container.siblings('.icon.' + Weather.get_weatherIcon(icon)).clearQueue().stop();
+        $container.siblings('.icon.' + Weather.get_weatherIcon(icon)).show(1000).css('display', 'inline-block');
     };
 
     /**
@@ -676,6 +689,61 @@ var Display = (function () {
     var PUBLIC = {
 
         display_currentWeather: display_currentWeather
+    };
+
+    return PUBLIC;
+})();
+
+/**
+ * @public
+ * @description Events handling
+ */
+var EventHandlers = (function () {
+
+    var loading = false;
+
+    var getNewUnitsData = function () {
+
+        var el = $(this);
+        var unit = el.data('unit');
+
+
+        if (!el.hasClass('selected') && loading === false) {
+
+            loading = true;
+
+            el.addClass('selected');
+            el.siblings().removeClass('selected');
+
+            var weatherInfo = Api.get_weatherInfo(Helpers.get_locationDetails().lat, Helpers.get_locationDetails().long, unit);
+            //then:
+            weatherInfo.done(function (statistics) {
+                //display page after all data is fetched
+                $document.fadeIn(1000);
+                //construct weather details
+                Weather.set_weatherDetails(statistics);
+                //create chart ($container, data, customType, customOptions)
+                Charts.create_chart($weatherChart, Weather.get_weather_details('daily'), 'line', null);
+                //display today's weather forecast ($container, data)
+                Display.display_currentWeather($currentWeatherContainer, Weather.get_weather_details('currently'));
+
+                loading = false;
+            });
+        }
+    };
+
+
+    var init = function () {
+
+        $unitsChange.find('li').off('click.changeUnits').on('click.changeUnits', getNewUnitsData);
+    };
+
+    /**
+     * Public Exports
+     */
+    var PUBLIC = {
+
+        init: init
     };
 
     return PUBLIC;
@@ -692,9 +760,9 @@ var Api = (function () {
      * @public
      * @description Get a weather informations from {@link api.darksky.net/forecast Forecast}
      */
-    var get_weatherInfo = function (latitude, longitude) {
+    var get_weatherInfo = function (latitude, longitude, units) {
 
-        var url = "https://crossorigin.me/https://api.darksky.net/forecast/d212e752e77024fa82c5713e0debad8b/" + latitude + "," + longitude + "?units=auto&exclude=minutely";
+        var url = "https://crossorigin.me/https://api.darksky.net/forecast/d212e752e77024fa82c5713e0debad8b/" + latitude + "," + longitude + "?units=" + (units || 'auto') + "&exclude=minutely";
 
         return $.ajax({
             type: 'GET',
@@ -735,9 +803,11 @@ var WeatherApp = (function () {
         //set user latitude and longitude
         Helpers.set_locationDetails(coords.latitude, coords.longitude);
         //get weather info using previously obtained coords
-        var weatherInfo = Api.get_weatherInfo(Helpers.get_locationDetails().lat, Helpers.get_locationDetails().long);
+        var weatherInfo = Api.get_weatherInfo(Helpers.get_locationDetails().lat, Helpers.get_locationDetails().long, 'ca');
         //then:
         weatherInfo.done(function (statistics) {
+            //default units highlight
+            $unitsChange.find('[data-unit="auto"]').addClass('selected');
             //display page after all data is fetched
             $document.fadeIn(1000);
             //construct weather details
@@ -746,7 +816,8 @@ var WeatherApp = (function () {
             Charts.create_chart($weatherChart, Weather.get_weather_details('daily'), 'line', null);
             //display today's weather forecast ($container, data)
             Display.display_currentWeather($currentWeatherContainer, Weather.get_weather_details('currently'));
-            //send me a cookie :)
+            //attach event handlers
+            EventHandlers.init();
         });
     });
 })();

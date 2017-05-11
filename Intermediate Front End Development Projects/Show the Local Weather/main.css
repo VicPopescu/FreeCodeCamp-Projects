@@ -205,6 +205,7 @@ html *:after {
     -webkit-transform: rotate(35deg);
     -ms-transform: rotate(35deg);
     -o-transform: rotate(35deg);
+    animation: spin 12s infinite linear;
 }
 
 .star:before {
@@ -473,7 +474,6 @@ html {
     display: flex;
     flex-flow: column;
     align-items: center;
-    /*justify-content: center;*/
     text-align: center;
 }
 
@@ -493,11 +493,31 @@ html {
     margin-top: 5vh;
 }
 
+#unitsChange {
+    font-size: 16px;
+    color: lightgray;
+    list-style: none;
+    margin: 0;
+    margin-top: 20px;
+    padding: 0;
+}
+
+.selected {
+    color: #40c4ff;
+    font-size: 19px;
+    box-shadow: 1px 3px 10px 0 rgba(0, 0, 0, 0.4), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+#unitsChange li {
+    display: inline-block;
+    user-select: none;
+    cursor: pointer;
+}
+
 #weatherInfo {
     display: flex;
     flex-flow: row;
     align-items: center;
-    /*justify-content: center;*/
     text-align: center;
 }
 
@@ -529,10 +549,15 @@ html {
     margin-top: 50px;
     width: 52vw;
     max-width: 800px;
+    box-shadow: 1px 3px 10px 0 rgba(0, 0, 0, 0.4), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 #nextDaysWeather h4 {
     margin-bottom: 15px;
+}
+
+.lightblue {
+    color: #40c4ff;
 }
 
 #weatherChart {
