@@ -63,7 +63,7 @@ var Helpers = (function () {
 
 
     /**
-     * @private
+     * @public
      * @description Construct location details (only coords for now)
      */
     var set_locationDetails = function (lat, long) {
@@ -139,7 +139,7 @@ var Helpers = (function () {
 
 
     /**
-     * @private
+     * @public
      * @description Get location details. This is the only function for returning all user details in global scope.
      * @return {object} location_details An object with user location details.
      */
@@ -150,7 +150,7 @@ var Helpers = (function () {
 
 
     /**
-     * @private
+     * @public
      * @description Parse a timestamp and returns only the hour.
      * @return {string} t The hour obtained from the timestamp (eg. 12:00:00").
      */
@@ -163,7 +163,7 @@ var Helpers = (function () {
 
 
     /**
-     * @private
+     * @public
      * @description Get wind direction
      * @return {string} dir Wind direction
      */
@@ -210,7 +210,7 @@ var Weather = (function () {
 
 
     /**
-     * @private
+     * @public
      * @description Construct weather details
      */
     var set_weatherDetails = function (weatherData) {
@@ -223,7 +223,7 @@ var Weather = (function () {
 
 
     /**
-     * @private
+     * @public
      * @description Return weather details
      * @param {string} flag Which details need to be fetched (all, daily, currently)
      */
@@ -243,7 +243,7 @@ var Weather = (function () {
 
 
     /**
-     * @private
+     * @public
      * @description Construct daily weather forecast
      * @returns {object} Daily forecast data
      */
@@ -292,7 +292,7 @@ var Weather = (function () {
 
 
     /**
-     * @private
+     * @public
      * @description Get unit measurement for different zones (eg. EU: Degrees Celsius for Temperature, Millimeters per hour for Precipitations etc)
      */
     var get_weatherUnits = function () {
@@ -351,7 +351,7 @@ var Weather = (function () {
 
 
     /**
-     * @private
+     * @public
      * @description Get Weather Icon
      */
     var get_weatherIcon = function (icon) {
@@ -755,6 +755,10 @@ var EventHandlers = (function () {
 
     var loading = false;
 
+    /**
+     * @private
+     * @description Get weather for SI, CA, UK2, US systems of measurement
+     */
     var getNewUnitsData = function () {
 
         var el = $(this);
@@ -786,6 +790,10 @@ var EventHandlers = (function () {
     };
 
 
+    /**
+     * @public
+     * @description Attach and initlialize event handlers
+     */
     var init = function () {
 
         $unitsChange.find('li').off('click.changeUnits').on('click.changeUnits', getNewUnitsData);
