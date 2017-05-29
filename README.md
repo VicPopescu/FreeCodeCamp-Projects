@@ -3,8 +3,8 @@ Projects done at Freecodecamp
 
 
 ## Intermediate Front End Development Projects   
-Random Quote Machine --> <span style="color:green">Done!</span>   
-Show the Local Weather --> <span style="color:green">Done!</span>   
+Random Quote Machine --> <span style="color:green">**Done!**</span>   
+Show the Local Weather --> <span style="color:green">**Done!**</span>   
 Twitch.tv JSON API -->  <span style="color:blue">*In progress...*</span>   
 Wikipedia Viewer --> <span style="color:blue">*In progress...*</span>   
 
