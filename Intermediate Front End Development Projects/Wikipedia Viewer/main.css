@@ -71,7 +71,28 @@ body {
     display: flex;
     flex-flow: column;
     align-items: center;
-    text-align: center;
+}
+
+#searchResults{/*the list*/
+    list-style: none;
+    color: white;
+    width: 60%;
+}
+
+#searchResults li{
+    background: rgba(255, 49, 52, 0.5);
+    margin: 5px 0;
+}
+
+#searchResults a{
+    display: inline-block;
+    padding: 20px;
+}
+
+#searchResults li p{
+    font-weight: bold;
+    margin-bottom: 10px;
+
 }
 
 footer {

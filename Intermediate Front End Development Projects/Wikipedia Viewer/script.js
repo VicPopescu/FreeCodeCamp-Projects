@@ -7,6 +7,7 @@
 //Global DOM selectors
 var $document = $('html');
 var $root = $('#main');
+var $resultsContainer = $('#searchResults');
 
 /**
  * @public
@@ -14,12 +15,24 @@ var $root = $('#main');
  */
 var Helpers = (function () {
 
+    var results;
+
+    var set_wikiResult = function(data){
+        results = data.query.search;
+    };
+
+    var get_wikiResults = function(){
+        return results;
+    }
+
     /**
      * Public Exports
      */
     var PUBLIC = {
         //sets
+        set_wikiResult : set_wikiResult,
         //gets
+        get_wikiResults : get_wikiResults
     };
 
     return PUBLIC;
@@ -76,11 +89,11 @@ var Api = (function () {
 
     /**
      * @public
-     * @description TODO
+     * @description Fetch wikipedia pages based on keyword
      */
-    var TODO = function () {
+    var wiki_query = function (keyword) {
 
-        var url = "TODO";
+        var url = "https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&prop=&list=search&srsearch="+ keyword +"&srnamespace=0&srlimit=10";
 
         return $.ajax({
             type: 'GET',
@@ -98,7 +111,7 @@ var Api = (function () {
      * Public exports
      */
     var PUBLIC = {
-        //TO BE
+        wiki_query: wiki_query
     };
 
     return PUBLIC;
@@ -111,5 +124,21 @@ var Api = (function () {
  * @description Main application logic. This makes the entire potato running
  */
 var WeatherApp = (function () {
-    //TO DO or NOT TO DO
+
+    var keyword = "Bear";
+    var wikiResults = Api.wiki_query(keyword);
+
+    wikiResults.done(function(data){
+
+        Helpers.set_wikiResult(data);
+
+        var results = Helpers.get_wikiResults();
+
+        for(var i = 0; i < results.length; i++){
+            $resultsContainer.append(
+                '<li><a href="https://en.wikipedia.org/wiki/'+ results[i].title +'" target="_blank"><p>'+ results[i].title +'</p>'+ results[i].snippet + '</a></li>'
+            );
+        }
+    });
+
 })();
