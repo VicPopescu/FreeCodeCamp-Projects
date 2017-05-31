@@ -123,7 +123,7 @@ var Api = (function () {
  * @public
  * @description Main application logic. This makes the entire potato running
  */
-var WeatherApp = (function () {
+var WikiViewer = (function () {
 
     var keyword = "Bear";
     var wikiResults = Api.wiki_query(keyword);
@@ -140,5 +140,4 @@ var WeatherApp = (function () {
             );
         }
     });
-
 })();
