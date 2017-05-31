@@ -17,11 +17,11 @@ var Helpers = (function () {
 
     var results;
 
-    var set_wikiResult = function(data){
+    var set_wikiResult = function (data) {
         results = data.query.search;
     };
 
-    var get_wikiResults = function(){
+    var get_wikiResults = function () {
         return results;
     }
 
@@ -30,9 +30,9 @@ var Helpers = (function () {
      */
     var PUBLIC = {
         //sets
-        set_wikiResult : set_wikiResult,
+        set_wikiResult: set_wikiResult,
         //gets
-        get_wikiResults : get_wikiResults
+        get_wikiResults: get_wikiResults
     };
 
     return PUBLIC;
@@ -93,7 +93,7 @@ var Api = (function () {
      */
     var wiki_query = function (keyword) {
 
-        var url = "https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&prop=&list=search&srsearch="+ keyword +"&srnamespace=0&srlimit=10";
+        var url = "https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&prop=&list=search&srsearch=" + keyword + "&srnamespace=0&srlimit=10";
 
         return $.ajax({
             type: 'GET',
@@ -128,16 +128,20 @@ var WikiViewer = (function () {
     var keyword = "Bear";
     var wikiResults = Api.wiki_query(keyword);
 
-    wikiResults.done(function(data){
-
+    wikiResults.done(function (data) {
+        //locally save the received data
         Helpers.set_wikiResult(data);
-
+        //fetch the data to be used
         var results = Helpers.get_wikiResults();
-
-        for(var i = 0; i < results.length; i++){
-            $resultsContainer.append(
-                '<li><a href="https://en.wikipedia.org/wiki/'+ results[i].title +'" target="_blank"><p>'+ results[i].title +'</p>'+ results[i].snippet + '</a></li>'
-            );
+        //loop through results, build list items and append them into DOM
+        for (var i = 0; i < results.length; i++) {
+            //result details
+            var title = results[i].title,
+                description = results[i].snippet;
+            //build item template
+            var item = '<li><a href="https://en.wikipedia.org/wiki/' + title + '" target="_blank"><p>' + title + '</p>' + description + '</a></li>';
+            //append item in the list
+            $resultsContainer.append(item);
         }
     });
 })();
