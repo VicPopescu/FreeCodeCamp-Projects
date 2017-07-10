@@ -6,7 +6,7 @@ Projects done at Freecodecamp
 Random Quote Machine --> <span style="color:green">**Done!**</span>   
 Show the Local Weather --> <span style="color:green">**Done!**</span>   
 Twitch.tv JSON API -->  <span style="color:blue">*In progress...*</span>   
-Wikipedia Viewer --> <span style="color:blue">*In progress...*</span>   
+Wikipedia Viewer --> <span style="color:blue">**Done!**</span>   
 
 ## Advanced Front End Development Projects   
 JavaScript Calculator --> <span style="color:blue">*In progress...*</span>   
