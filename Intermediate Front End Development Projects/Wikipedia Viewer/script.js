@@ -1,5 +1,5 @@
 /**
- * @description TO DO
+ * @description A wikipedia viewer. Search for wiki entries.
  * @author Victor Popescu {@link https://github.com/VicPopescu}
  * 
  */
@@ -7,6 +7,9 @@
 //Global DOM selectors
 var $document = $('html');
 var $root = $('#main');
+var $searchOptions = $('#searchOptions');
+var $searchField = $('#searchField');
+var $errors = $('#errors');
 var $resultsContainer = $('#searchResults');
 
 /**
@@ -44,11 +47,63 @@ var Helpers = (function () {
  */
 var Display = (function () {
 
+    var displayResults = function (keyword) {
+
+        $resultsContainer.fadeOut('fast');
+
+        var wikiResults = Api.wiki_query(keyword);
+
+        wikiResults.done(function (data) {
+
+            if (data.error) {
+                $errors.empty().text("Something bad happened, we can't get the results...");
+                $searchOptions.animate({
+                    'margin-top': '10%'
+                }, 500);
+                return;
+            } else {
+                $errors.empty();
+            }
+            if (!data.continue) {
+                $searchOptions.animate({
+                    'margin-top': '10%'
+                }, 500);
+                $errors.empty().text("We couldn't find any results... Please try something else!");
+                return;
+            } else {
+                $errors.empty();
+            }
+
+            //
+            $searchOptions.animate({
+                'margin-top': '1%'
+            }, 500);
+
+            //locally save the received data
+            Helpers.set_wikiResult(data);
+            //fetch the data to be used
+            var results = Helpers.get_wikiResults();
+            //clear previously searched
+            $resultsContainer.empty();
+            //loop through results, build list items and append them into DOM
+            for (var i = 0; i < results.length; i++) {
+                //result details
+                var title = results[i].title,
+                    description = results[i].snippet;
+                //build item template
+                var item = '<li><a href="https://en.wikipedia.org/wiki/' + title + '" target="_blank"><p>' + title + '</p>' + description + '</a></li>';
+                //append item in the list
+                $resultsContainer.append(item);
+            }
+            $resultsContainer.fadeIn('slow');
+        });
+
+    };
     /**
      * Public Exports
      */
     var PUBLIC = {
-        //TO DO
+        displayResults: displayResults
     };
 
     return PUBLIC;
@@ -61,12 +116,34 @@ var Display = (function () {
  */
 var EventHandlers = (function () {
 
+    var getWikiEntries = function (e) {
+
+        //continue only if user presses "enter"
+        if (e.which !== 13) return;
+
+        var keyword = $(this).val();
+
+        if (!keyword.length) {
+            //
+            $searchOptions.animate({
+                'margin-top': '10%'
+            }, 500);
+
+            $resultsContainer.fadeOut('slow');
+            $errors.empty().text("You can't search for nothingness...");
+
+            return;
+        }
+
+        Display.displayResults(keyword);
+    };
+
     /**
      * @public
      * @description Attach and initlialize event handlers
      */
     var init = function () {
-        //TO BE
+        $searchField.on('keypress.getWikiEntries', getWikiEntries);
     };
 
     /**
@@ -125,23 +202,5 @@ var Api = (function () {
  */
 var WikiViewer = (function () {
 
-    var keyword = "Bear";
-    var wikiResults = Api.wiki_query(keyword);
-
-    wikiResults.done(function (data) {
-        //locally save the received data
-        Helpers.set_wikiResult(data);
-        //fetch the data to be used
-        var results = Helpers.get_wikiResults();
-        //loop through results, build list items and append them into DOM
-        for (var i = 0; i < results.length; i++) {
-            //result details
-            var title = results[i].title,
-                description = results[i].snippet;
-            //build item template
-            var item = '<li><a href="https://en.wikipedia.org/wiki/' + title + '" target="_blank"><p>' + title + '</p>' + description + '</a></li>';
-            //append item in the list
-            $resultsContainer.append(item);
-        }
-    });
+    EventHandlers.init();
 })();

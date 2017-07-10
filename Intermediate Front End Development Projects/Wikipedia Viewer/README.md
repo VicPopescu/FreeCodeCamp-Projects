@@ -1,5 +1,5 @@
 # Wikipedia Viewer
 
-Search for wikipedia articles
+Search for wikipedia articles.
 
 

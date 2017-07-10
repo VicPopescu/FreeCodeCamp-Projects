@@ -7,7 +7,7 @@
     <meta name="description" content="A Wikipedia Viewer">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!--Fonts-->
-    <!--TO BE-->
+    <link href="https://fonts.googleapis.com/css?family=Zilla+Slab:400,700" rel="stylesheet">
     <!--Main-->
     <link rel="stylesheet" type="text/css" href="main.css">
 </head>
@@ -15,9 +15,16 @@
 <body>
     <main id="main">
 
-        <ul id="searchResults">
+        <!--Search options-->
+        <div id="searchOptions">
+            <h1 id="title">Wikipedia Viewer</h1>
+            <input id="searchField" type="text" placeholder="Search wiki..." title="Type something and press enter!" autofocus>
+            <a id="randomArticle" href="https://en.wikipedia.org/wiki/Special:Random" target="_blank" title="Show a random wiki article">I'm feeling lucky!</a>
+        </div>
 
-        </ul>
+        <!--Results list-->
+        <div id="errors"></div>
+        <ul id="searchResults"></ul>
 
         <!--Footer Links-->
         <section id='footerLinks'>
@@ -37,7 +44,8 @@
     </main>
 
     <!--   Scripts   -->
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+        crossorigin="anonymous"></script>
     <script src="script.js"></script>
 </body>
 

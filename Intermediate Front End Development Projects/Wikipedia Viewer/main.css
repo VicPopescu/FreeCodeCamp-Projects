@@ -45,7 +45,7 @@ a {
 }
 
 a:hover {
-    color: #40c4ff;
+    color: rgba(255, 49, 52, 0.8);
 }
 
 html,
@@ -53,14 +53,15 @@ body {
     height: 100vh;
     position: relative;
     overflow-x: hidden;
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Zilla Slab', serif;
+    font-size: 16px;
 }
 
 
 /*  End - Resets   */
 
 #main {
-    background-color: rgb(49, 49, 52);
+    background-color: white;
     position: relative;
     min-height: 100vh;
     width: 100vw;
@@ -73,26 +74,82 @@ body {
     align-items: center;
 }
 
-#searchResults{/*the list*/
+#title {
+    color: rgba(255, 49, 52, 0.7);
+}
+
+#searchOptions {
+    text-align: center;
+    margin-top: 10%;
+}
+
+#searchField,
+#randomArticle {
+    margin: 0;
+    margin-top: 15px;
+    padding: 8px 15px 8px 15px;
+    outline: none;
+    display: block;
+}
+
+#searchField {
+    width: 230px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 49, 52, 0.4);
+    font-size: 16px;
+    color: black;
+    font-family: 'Zilla Slab', serif;
+}
+
+#randomArticle {
+    font-size: 120%;
+    color: rgba(255, 49, 52, 0.6);
+}
+
+#randomArticle:hover {
+    color: rgba(255, 49, 52, 0.9);
+}
+
+#errors {
+    text-align: center;
+    color: red;
+}
+
+#searchResults {
     list-style: none;
     color: white;
     width: 60%;
+    max-width: 900px;
+    margin: 0;
+    padding: 0;
+    margin-bottom: 30px;
 }
 
-#searchResults li{
-    background: rgba(255, 49, 52, 0.5);
+#searchResults li {
+    background: rgba(255, 49, 52, 0.8);
     margin: 5px 0;
 }
 
-#searchResults a{
+#searchResults a {
     display: inline-block;
     padding: 20px;
+    border: 0.1px solid transparent;
 }
 
-#searchResults li p{
+#searchResults a:hover {
+    background: rgba(255, 255, 255, 1);
+    color: black;
+    -webkit-transition: all 0.2s ease-in-out 0s;
+    -moz-transition: all 0.2s ease-in-out 0s;
+    -o-transition: all 0.2s ease-in-out 0s;
+    -ms-transition: all 0.2s ease-in-out 0s;
+    transition: all 0.2s ease-in-out 0s;
+    border-color: rgba(255, 49, 52, 0.8);
+}
+
+#searchResults li p {
     font-weight: bold;
     margin-bottom: 10px;
-
 }
 
 footer {
@@ -110,10 +167,9 @@ footer {
     height: 30px;
     padding-top: 10px;
     text-align: center;
-    font-family: Tahoma, Geneva, Verdana, sans-serif;
     color: white;
     font-size: 14px;
-    background-color: rgba(0, 0, 0, 0.1);
+    background-color: rgba(0, 0, 0, 0.3);
     -webkit-transition: all 0.7s ease-in-out 0s;
     -moz-transition: all 0.7s ease-in-out 0s;
     -o-transition: all 0.7s ease-in-out 0s;
@@ -128,5 +184,6 @@ footer:hover {
 
 
 /*  Media Queries   */
+
 
 /*TO BE*/
