@@ -5,7 +5,9 @@
 var twitchTvStreams = (function () {
 
     var $menuItem = $('#menu li'),
-        $streamsList = $('#streamsList');
+        $streamsList = $('#streamsList'),
+        $loading = $('.loading'),
+        $searchField = $('#searchField');
 
     var networkBusy = false;
     var channels = ["ESL_SC2", "OgamingSC2", "cretetion", "freecodecamp", "storbeck", "habathcx", "RobotCaleb", "noobs2ninjas"];
@@ -29,8 +31,34 @@ var twitchTvStreams = (function () {
 
         };
 
+        var doFilter = function () {
+
+            var keyword = $(this).val();
+            var items = $streamsList.children();
+
+            if (!keyword) {
+                items.show();
+                return false;
+            } else {
+
+                var reg = new RegExp(keyword);
+
+                for (var i = 0; i < items.length; i++) {
+
+                    var key = items[i].dataset.name;
+
+                    if (!reg.test(key)) {
+                        $(items[i]).hide();
+                    }else{
+                        $(items[i]).show();
+                    }
+                }
+            }
+        };
+
         var init = function () {
             $menuItem.on('click.menuSelection', menuSelection);
+            $searchField.on('keyup.doFilter', doFilter);
         };
 
         /**
@@ -79,6 +107,7 @@ var twitchTvStreams = (function () {
 
             networkBusy = true;
             $streamsList.empty();
+            $loading.show();
 
             channels.forEach(function (name, i) {
 
@@ -91,6 +120,7 @@ var twitchTvStreams = (function () {
                     stream.done(function (streamData) {
 
                         Display.displayItems(channelData, streamData, selection);
+                        $loading.hide();
 
                         if (i === channels.length - 1) {
                             networkBusy = false;
@@ -147,7 +177,7 @@ var twitchTvStreams = (function () {
             } else {
                 chAvailable = 'offline';
                 color = 'textDark';
-                bgColor = 'bgDark';                
+                bgColor = 'bgDark';
             }
 
 
@@ -155,7 +185,7 @@ var twitchTvStreams = (function () {
 
                 var t;
 
-                t = $('<li class="streamItem" data-available="' + av + '"></li>');
+                t = $('<li class="streamItem" data-available="' + av + '" data-name="' + n + '" title="Click for channel view!"></li>');
                 a = $('<a class="chLink" href="' + l + '" target="_blank"></a>').appendTo(t);
                 $('<div class="chOnlineHint" data-color="' + b + '"></div>').appendTo(a);
                 $('<img class="chImg" src="' + i + '" alt="Channel logo" />').appendTo(a);
