@@ -168,14 +168,14 @@ var twitchTvStreams = (function () {
             var chLink = channelData.url,
                 chImage = channelData.logo || "https://via.placeholder.com/100x100",
                 chName = channelData.name;
-            var chAvailable, color, bgColor;
+            var chAvailable, color, bgColor, chPreview;
 
             if (streamData.stream) {
-                chAvailable = 'online';
                 color = 'textGreen';
                 bgColor = 'bgGreen';
+                chAvailable = streamData.stream.channel.game + ': <span class="status">' + streamData.stream.channel.status + '</span>';
             } else {
-                chAvailable = 'offline';
+                chAvailable = '&#x25CF; offline';
                 color = 'textDark';
                 bgColor = 'bgDark';
             }
@@ -185,12 +185,12 @@ var twitchTvStreams = (function () {
 
                 var t;
 
-                t = $('<li class="streamItem" data-available="' + av + '" data-name="' + n + '" title="Click for channel view!"></li>');
+                t = $('<li class="streamItem" data-name="' + n + '" title="Click for channel view!"></li>');
                 a = $('<a class="chLink" href="' + l + '" target="_blank"></a>').appendTo(t);
                 $('<div class="chOnlineHint" data-color="' + b + '"></div>').appendTo(a);
                 $('<img class="chImg" src="' + i + '" alt="Channel logo" />').appendTo(a);
                 $('<span class="chName">' + n + '</span>').appendTo(a);
-                $('<span class="chAvailability" data-color="' + c + '">&#x25CF; ' + av + ' </span>').appendTo(a);
+                $('<span class="chAvailability" data-color="' + c + '">' + av + ' </span>').appendTo(a);
 
                 return t;
             };

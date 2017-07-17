@@ -115,6 +115,7 @@ body {
     display: block;
     width: 50%;
     max-width: 700px;
+    min-width: 284.5px;
     min-height: 90%;
     margin: 0 auto;
     margin-top: 20px;
@@ -245,6 +246,7 @@ body {
     float: right;
     color: #3D3242;
     font-weight: bold;
+    max-width: 60%;
 }
 
 .chOnlineHint {
@@ -265,6 +267,12 @@ body {
     left: 80px;
     bottom: 20px;
     font-size: 18px;
+}
+
+.status{
+    color: white;
+    font-weight: normal;
+    font-size: 13px;
 }
 
 [data-color="textGreen"] {
@@ -303,4 +311,13 @@ footer {
 footer:hover {
     right: 0;
     background-color: rgba(0, 0, 0, 0.9);
+}
+
+@media only screen and (max-width: 1020px) {
+    header{
+        padding-bottom: 50px;
+    }
+    .status{
+        display:none;
+    }
 }
