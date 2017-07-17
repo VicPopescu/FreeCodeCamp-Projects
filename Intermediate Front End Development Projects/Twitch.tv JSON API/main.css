@@ -275,6 +275,11 @@ body {
     font-size: 13px;
 }
 
+.error{
+    text-align: center;
+    padding-top: 30px;
+}
+
 [data-color="textGreen"] {
     color: #5bbf0b;
 }

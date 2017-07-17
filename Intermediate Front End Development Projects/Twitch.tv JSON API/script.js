@@ -10,7 +10,7 @@ var twitchTvStreams = (function () {
         $searchField = $('#searchField');
 
     var networkBusy = false;
-    var channels = ["ESL_SC2", "OgamingSC2", "cretetion", "freecodecamp", "storbeck", "habathcx", "RobotCaleb", "noobs2ninjas"];
+    var channels = ["brunofin", "comster404", "ESL_SC2", "OgamingSC2", "cretetion", "freecodecamp", "storbeck", "habathcx", "RobotCaleb", "noobs2ninjas"];
 
 
     var Handlers = (function () {
@@ -163,6 +163,14 @@ var twitchTvStreams = (function () {
                     break;
                 default:
                     break;
+            }
+
+            if(channelData.error){
+
+                var message = channelData.message;
+                var info = $('<li class="streamItem error"><p>Sorry... '+ message +'</p></li>');
+                $streamsList.append(info);
+                return false;
             }
 
             var chLink = channelData.url,
